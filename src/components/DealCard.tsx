@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import type { Deal } from '../lib/types'
 import { getMediaUrl } from '../lib/storage'
+import { publicLocation } from '../lib/site'
 
 interface TaskCounts {
   todo: number
@@ -19,6 +20,7 @@ export default function DealCard({
 }) {
   const total = counts.todo + counts.complete + counts.red_alert
   const pct = total > 0 ? Math.round((counts.complete / total) * 100) : 0
+  const location = publicLocation(deal.property_address)
 
   return (
     <Link
@@ -56,7 +58,7 @@ export default function DealCard({
       <div className="flex flex-1 flex-col gap-3 p-4">
         <div>
           <h3 className="font-semibold text-white group-hover:text-brand-400 transition-colors">{deal.title}</h3>
-          {deal.property_address && <p className="mt-0.5 text-sm text-ink-400">{deal.property_address}</p>}
+          {location && <p className="mt-0.5 text-sm text-ink-400">{location}</p>}
         </div>
 
         {total > 0 && (
