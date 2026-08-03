@@ -14,9 +14,9 @@
   --color-ink-100: #e7ebef;
   --color-ink-50: #f5f7f9;
 
-  --color-brand-600: #0f9d70;
-  --color-brand-500: #14b884;
-  --color-brand-400: #34d399;
+  --color-brand-600: #0284c7;
+  --color-brand-500: #0ea5e9;
+  --color-brand-400: #38bdf8;
 
   --color-gold-500: #d4a24c;
   --color-gold-400: #e8bc6c;
@@ -39,7 +39,7 @@ body {
 
 ::selection {
   background: var(--color-brand-500);
-  color: #06231a;
+  color: #04212e;
 }
 
 .scrollbar-thin::-webkit-scrollbar {
