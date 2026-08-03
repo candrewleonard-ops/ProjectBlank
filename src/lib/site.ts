@@ -1,5 +1,5 @@
 // Change these two lines to re-brand the whole site.
-export const SITE_NAME = 'Cornerstone'
+export const SITE_NAME = 'Reinnovation Homes'
 export const SITE_TAGLINE = 'Live deal updates for investors & followers'
 
 // Contact details shown to visitors. Change the phone number here and it
