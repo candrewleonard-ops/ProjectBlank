@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import { getMediaUrl } from '../lib/storage'
 import type { Deal, DealTask } from '../lib/types'
 import { formatDate } from '../lib/format'
+import { publicLocation } from '../lib/site'
 import Spinner from '../components/Spinner'
 import TaskBoard from '../components/TaskBoard'
 import MediaGallery from '../components/MediaGallery'
@@ -73,6 +74,9 @@ export default function DealDetail() {
     )
   }
 
+  const location = publicLocation(deal.property_address)
+
+
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
       {deal.is_illiquid && <IlliquidModal dealId={deal.id} dealTitle={deal.title} reason={deal.alert_reason} />}
@@ -103,7 +107,7 @@ export default function DealDetail() {
               {deal.status}
             </span>
           </div>
-          {deal.property_address && <p className="text-sm text-ink-400">{deal.property_address}</p>}
+          {location && <p className="text-sm text-ink-400">{location}</p>}
           <p className="text-xs text-ink-500">Last updated {formatDate(deal.updated_at)}</p>
         </div>
       </div>
