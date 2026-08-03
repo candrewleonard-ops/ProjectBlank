@@ -1,5 +1,6 @@
 import type { Deal } from '../lib/types'
 import { formatCurrency } from '../lib/format'
+import { publicLocation, ADDRESS_ON_REQUEST, CONTACT_PHONE, CONTACT_PHONE_HREF } from '../lib/site'
 import DocumentList from './DocumentList'
 
 function Field({ label, value }: { label: string; value: string | number | null }) {
@@ -14,17 +15,29 @@ function Field({ label, value }: { label: string; value: string | number | null 
 export default function DealInfoTab({ deal }: { deal: Deal }) {
   const budgetDiff =
     deal.rehab_budget !== null && deal.rehab_spent !== null ? deal.rehab_spent - deal.rehab_budget : null
+  const location = publicLocation(deal.property_address)
 
   return (
     <div className="flex flex-col gap-8">
       <div>
         <h3 className="mb-3 text-sm font-semibold text-white">Property details</h3>
         <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <Field label="Property address" value={deal.property_address} />
+          <Field label="Location" value={location} />
           <Field label="Year built" value={deal.year_built} />
           <Field label="Exterior" value={deal.exterior_type} />
           <Field label="ARV (after-repair value)" value={formatCurrency(deal.arv)} />
         </dl>
+        <div className="mt-3 rounded-lg border border-brand-500/30 bg-brand-500/5 px-3.5 py-3">
+          <p className="text-sm text-ink-200">
+            {ADDRESS_ON_REQUEST} — call{' '}
+            <a
+              href={CONTACT_PHONE_HREF}
+              className="font-semibold text-brand-400 transition-colors hover:text-brand-300"
+            >
+              {CONTACT_PHONE}
+            </a>
+          </p>
+        </div>
       </div>
 
       <div>
