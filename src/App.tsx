@@ -3,7 +3,7 @@ import { AuthProvider } from './context/AuthContext'
 import { isSupabaseConfigured } from './lib/supabase'
 import ConfigNotice from './components/ConfigNotice'
 import Layout from './components/Layout'
-import { ProtectedRoute, AdminRoute } from './components/ProtectedRoute'
+import { AdminRoute } from './components/ProtectedRoute'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import DealDetail from './pages/DealDetail'
@@ -19,22 +19,11 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route element={<Layout />}>
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/deals/:slug"
-              element={
-                <ProtectedRoute>
-                  <DealDetail />
-                </ProtectedRoute>
-              }
-            />
+            {/* Deals are public - no sign-in required to browse. */}
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/deals/:slug" element={<DealDetail />} />
+
+            {/* Admin screens still require an admin account. */}
             <Route
               path="/admin"
               element={
