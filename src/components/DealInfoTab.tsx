@@ -1,0 +1,62 @@
+import type { Deal } from '../lib/types'
+import { formatCurrency } from '../lib/format'
+import DocumentList from './DocumentList'
+
+function Field({ label, value }: { label: string; value: string | number | null }) {
+  return (
+    <div className="rounded-lg border border-ink-700/60 bg-ink-900/40 px-3.5 py-3">
+      <dt className="text-xs font-medium uppercase tracking-wide text-ink-500">{label}</dt>
+      <dd className="mt-1 text-sm text-ink-100">{value === null || value === '' ? '—' : value}</dd>
+    </div>
+  )
+}
+
+export default function DealInfoTab({ deal }: { deal: Deal }) {
+  const budgetDiff =
+    deal.rehab_budget !== null && deal.rehab_spent !== null ? deal.rehab_spent - deal.rehab_budget : null
+
+  return (
+    <div className="flex flex-col gap-8">
+      <div>
+        <h3 className="mb-3 text-sm font-semibold text-white">Property details</h3>
+        <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <Field label="Property address" value={deal.property_address} />
+          <Field label="Year built" value={deal.year_built} />
+          <Field label="Exterior" value={deal.exterior_type} />
+          <Field label="ARV (after-repair value)" value={formatCurrency(deal.arv)} />
+        </dl>
+      </div>
+
+      <div>
+        <h3 className="mb-3 text-sm font-semibold text-white">Financing & rehab budget</h3>
+        <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <Field label="Lien (incl. rehab budget)" value={formatCurrency(deal.lien_amount)} />
+          <Field label="Rehab budget" value={formatCurrency(deal.rehab_budget)} />
+          <Field label="Rehab spent to date" value={formatCurrency(deal.rehab_spent)} />
+          <Field
+            label="Budget variance"
+            value={
+              budgetDiff === null
+                ? null
+                : budgetDiff === 0
+                  ? 'On budget'
+                  : budgetDiff < 0
+                    ? `${formatCurrency(Math.abs(budgetDiff))} under budget`
+                    : `${formatCurrency(budgetDiff)} over budget`
+            }
+          />
+        </dl>
+        {deal.budget_variance_note && (
+          <p className="mt-3 rounded-lg border border-ink-700/60 bg-ink-900/40 px-3.5 py-3 text-sm text-ink-300">
+            {deal.budget_variance_note}
+          </p>
+        )}
+      </div>
+
+      <div>
+        <h3 className="mb-3 text-sm font-semibold text-white">Documents</h3>
+        <DocumentList dealId={deal.id} docType="pdf" />
+      </div>
+    </div>
+  )
+}
