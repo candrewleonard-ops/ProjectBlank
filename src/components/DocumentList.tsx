@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { getSignedDocUrl } from '../lib/storage'
+import { useAuth } from '../context/AuthContext'
 import type { DealDocument, DocType } from '../lib/types'
 import Spinner from './Spinner'
 
 export default function DocumentList({ dealId, docType }: { dealId: string; docType: DocType }) {
+  const { user } = useAuth()
   const [docs, setDocs] = useState<DealDocument[]>([])
   const [loading, setLoading] = useState(true)
   const [opening, setOpening] = useState<string | null>(null)
@@ -35,6 +38,22 @@ export default function DocumentList({ dealId, docType }: { dealId: string; docT
     const url = await getSignedDocUrl(doc.storage_path)
     setOpening(null)
     if (url) window.open(url, '_blank', 'noopener,noreferrer')
+  }
+
+  if (!user) {
+    return (
+      <div className="rounded-xl border border-dashed border-ink-700 py-8 text-center">
+        <p className="text-sm text-ink-400">
+          {docType === 'pdf' ? 'Documents' : 'Invoices'} are for signed-in investors.
+        </p>
+        <Link
+          to="/login"
+          className="mt-2 inline-block text-sm font-medium text-brand-400 hover:underline"
+        >
+          Sign in or create a free account →
+        </Link>
+      </div>
+    )
   }
 
   if (loading) return <Spinner full={false} />

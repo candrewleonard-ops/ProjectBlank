@@ -100,7 +100,14 @@ This is a static single-page app — no server required.
 `public/_redirects` is already set up so client-side routes like
 `/deals/some-deal` work on refresh and direct link.
 
-## 6. Everyday use
+## 6. Upgrading an existing live site
+
+If your Supabase project was created before the inquiries/current-focus
+update, run [`supabase/upgrade-2026-08.sql`](./supabase/upgrade-2026-08.sql)
+once in the SQL Editor. It adds the new deal fields, the investor-inquiry
+table, and public (logged-out) read access to match the public site.
+
+## 7. Everyday use
 
 - Add a new deal in **Admin -> New deal**, fill in the property template,
   save, then upload photos/video and documents from the same page.

@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase'
 import type { Deal, TaskStatus } from '../lib/types'
 import DealCard from '../components/DealCard'
 import Spinner from '../components/Spinner'
+import { CONTACT_PHONE, CONTACT_PHONE_HREF } from '../lib/site'
 
 interface Counts {
   todo: number
@@ -68,9 +69,17 @@ export default function Dashboard() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-      <div className="mb-8">
-        <h1 className="text-2xl font-semibold tracking-tight text-white">Active deals</h1>
-        <p className="mt-1 text-sm text-ink-400">Live status on every project — updated as work happens.</p>
+      <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight text-white">Active deals</h1>
+          <p className="mt-1 text-sm text-ink-400">Live status on every project — updated as work happens.</p>
+        </div>
+        <p className="text-sm text-ink-400">
+          Want to partner on a project?{' '}
+          <a href={CONTACT_PHONE_HREF} className="font-semibold text-brand-400 hover:underline">
+            Call {CONTACT_PHONE}
+          </a>
+        </p>
       </div>
 
       {error && (

@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import type { Deal } from '../lib/types'
 import { getMediaUrl } from '../lib/storage'
 import { publicLocation } from '../lib/site'
+import { formatCompactCurrency } from '../lib/format'
 
 interface TaskCounts {
   todo: number
@@ -21,6 +22,7 @@ export default function DealCard({
   const total = counts.todo + counts.complete + counts.red_alert
   const pct = total > 0 ? Math.round((counts.complete / total) * 100) : 0
   const location = publicLocation(deal.property_address)
+  const equity = deal.arv !== null && deal.lien_amount !== null ? deal.arv - deal.lien_amount : null
 
   return (
     <Link
@@ -61,22 +63,46 @@ export default function DealCard({
           {location && <p className="mt-0.5 text-sm text-ink-400">{location}</p>}
         </div>
 
-        {total > 0 && (
+        {(total > 0 || deal.current_focus) && (
           <div>
-            <div className="mb-1.5 flex items-center justify-between text-xs text-ink-400">
-              <span>{counts.complete} of {total} tasks complete</span>
-              <span>{pct}%</span>
+            <div className="mb-1.5 flex items-center justify-between gap-2 text-xs">
+              {deal.current_focus ? (
+                <span className="flex min-w-0 items-center gap-1.5 font-medium text-brand-400">
+                  <span className="h-1.5 w-1.5 shrink-0 animate-pulse rounded-full bg-brand-400" />
+                  <span className="truncate">Now: {deal.current_focus}</span>
+                </span>
+              ) : (
+                <span className="text-ink-400">{counts.complete} of {total} tasks complete</span>
+              )}
+              {total > 0 && <span className="shrink-0 text-ink-400">{pct}%</span>}
             </div>
-            <div className="h-1.5 w-full overflow-hidden rounded-full bg-ink-700">
-              <div
-                className="h-full rounded-full bg-gradient-to-r from-brand-500 to-brand-400 transition-all"
-                style={{ width: `${pct}%` }}
-              />
-            </div>
+            {total > 0 && (
+              <div className="h-1.5 w-full overflow-hidden rounded-full bg-ink-700">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-brand-500 to-brand-400 transition-all"
+                  style={{ width: `${pct}%` }}
+                />
+              </div>
+            )}
             {counts.red_alert > 0 && (
               <p className="mt-1.5 text-xs font-medium text-alert-400">
                 {counts.red_alert} item{counts.red_alert > 1 ? 's' : ''} flagged
               </p>
+            )}
+          </div>
+        )}
+
+        {(deal.arv !== null || equity !== null) && (
+          <div className="mt-auto flex gap-2 border-t border-ink-700/60 pt-3 text-xs">
+            {deal.arv !== null && (
+              <span className="rounded-md bg-ink-800 px-2 py-1 text-ink-300">
+                ARV <span className="font-semibold text-white">{formatCompactCurrency(deal.arv)}</span>
+              </span>
+            )}
+            {equity !== null && equity > 0 && (
+              <span className="rounded-md bg-brand-500/10 px-2 py-1 text-brand-400">
+                Projected equity <span className="font-semibold">{formatCompactCurrency(equity)}</span>
+              </span>
             )}
           </div>
         )}

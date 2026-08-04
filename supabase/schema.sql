@@ -91,6 +91,12 @@ create table if not exists public.deals (
   -- cover image shown on dashboard cards + top of deal page
   cover_image_path text,
 
+  -- what's being worked on right now (shows live on cards + deal page)
+  current_focus text,
+
+  -- optional Google Drive album link, opens in a new tab
+  drive_url text,
+
   -- red alert / illiquid popup
   is_illiquid boolean not null default false,
   alert_reason text,
@@ -102,9 +108,9 @@ create table if not exists public.deals (
 
 alter table public.deals enable row level security;
 
-drop policy if exists "deals: read all authenticated" on public.deals;
-create policy "deals: read all authenticated" on public.deals
-  for select to authenticated using (true);
+drop policy if exists "deals: public read" on public.deals;
+create policy "deals: public read" on public.deals
+  for select using (true);
 
 drop policy if exists "deals: admin write" on public.deals;
 create policy "deals: admin write" on public.deals
@@ -138,9 +144,9 @@ create table if not exists public.deal_tasks (
 
 alter table public.deal_tasks enable row level security;
 
-drop policy if exists "deal_tasks: read all authenticated" on public.deal_tasks;
-create policy "deal_tasks: read all authenticated" on public.deal_tasks
-  for select to authenticated using (true);
+drop policy if exists "deal_tasks: public read" on public.deal_tasks;
+create policy "deal_tasks: public read" on public.deal_tasks
+  for select using (true);
 
 drop policy if exists "deal_tasks: admin write" on public.deal_tasks;
 create policy "deal_tasks: admin write" on public.deal_tasks
@@ -166,9 +172,9 @@ create table if not exists public.deal_media (
 
 alter table public.deal_media enable row level security;
 
-drop policy if exists "deal_media: read all authenticated" on public.deal_media;
-create policy "deal_media: read all authenticated" on public.deal_media
-  for select to authenticated using (true);
+drop policy if exists "deal_media: public read" on public.deal_media;
+create policy "deal_media: public read" on public.deal_media
+  for select using (true);
 
 drop policy if exists "deal_media: admin write" on public.deal_media;
 create policy "deal_media: admin write" on public.deal_media
@@ -195,6 +201,37 @@ create policy "deal_documents: read all authenticated" on public.deal_documents
 drop policy if exists "deal_documents: admin write" on public.deal_documents;
 create policy "deal_documents: admin write" on public.deal_documents
   for all to authenticated using (public.is_admin()) with check (public.is_admin());
+
+-- ----------------------------------------------------------------------------
+-- deal_inquiries — investor "I'm interested" submissions, one per deal
+-- ----------------------------------------------------------------------------
+create table if not exists public.deal_inquiries (
+  id uuid primary key default gen_random_uuid(),
+  deal_id uuid not null references public.deals (id) on delete cascade,
+  name text not null,
+  email text,
+  phone text,
+  message text,
+  user_id uuid references public.profiles (id) on delete set null,
+  created_at timestamptz not null default now(),
+  constraint inquiry_has_contact check (
+    coalesce(nullif(trim(email), ''), nullif(trim(phone), '')) is not null
+  )
+);
+
+alter table public.deal_inquiries enable row level security;
+
+drop policy if exists "deal_inquiries: public insert" on public.deal_inquiries;
+create policy "deal_inquiries: public insert" on public.deal_inquiries
+  for insert with check (true);
+
+drop policy if exists "deal_inquiries: admin read" on public.deal_inquiries;
+create policy "deal_inquiries: admin read" on public.deal_inquiries
+  for select to authenticated using (public.is_admin());
+
+drop policy if exists "deal_inquiries: admin delete" on public.deal_inquiries;
+create policy "deal_inquiries: admin delete" on public.deal_inquiries
+  for delete to authenticated using (public.is_admin());
 
 -- ----------------------------------------------------------------------------
 -- Storage buckets
@@ -246,3 +283,4 @@ create index if not exists deal_tasks_deal_id_idx on public.deal_tasks (deal_id,
 create index if not exists deal_media_deal_id_idx on public.deal_media (deal_id, position);
 create index if not exists deal_documents_deal_id_idx on public.deal_documents (deal_id);
 create index if not exists deals_status_idx on public.deals (status);
+create index if not exists deal_inquiries_deal_id_idx on public.deal_inquiries (deal_id, created_at desc);

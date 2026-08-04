@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react'
-import { CONTACT_HREF } from '../lib/site'
 
 export default function IlliquidModal({
   dealId,
   dealTitle,
   reason,
+  onCta,
 }: {
   dealId: string
   dealTitle: string
   reason: string | null
+  onCta: () => void
 }) {
   const storageKey = `illiquid-dismissed-${dealId}`
   const [open, setOpen] = useState(false)
@@ -83,12 +84,15 @@ export default function IlliquidModal({
           </p>
 
           <div className="mt-6 flex flex-col gap-2">
-            <a
-              href={CONTACT_HREF}
-              className="flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-brand-500 to-brand-400 px-4 py-2.5 text-sm font-semibold text-ink-950 shadow-lg shadow-brand-500/20 transition-transform hover:scale-[1.02] active:scale-[0.99]"
+            <button
+              onClick={() => {
+                close()
+                onCta()
+              }}
+              className="flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-brand-500 to-brand-400 px-4 py-2.5 text-sm font-semibold text-ink-950 shadow-lg shadow-brand-500/20 transition-transform hover:scale-[1.02] active:scale-[0.99] cursor-pointer"
             >
-              Contact us about financing
-            </a>
+              I'm interested in financing this
+            </button>
             <button
               onClick={close}
               className="rounded-lg px-4 py-2 text-sm font-medium text-ink-400 transition-colors hover:text-white cursor-pointer"

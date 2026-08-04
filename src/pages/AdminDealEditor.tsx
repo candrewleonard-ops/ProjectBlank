@@ -8,11 +8,14 @@ import Spinner from '../components/Spinner'
 import AdminTaskManager from '../components/admin/AdminTaskManager'
 import AdminMediaManager from '../components/admin/AdminMediaManager'
 import AdminDocumentManager from '../components/admin/AdminDocumentManager'
+import AdminInquiries from '../components/admin/AdminInquiries'
 
 interface FormState {
   title: string
   slug: string
   status: DealStatus
+  current_focus: string
+  drive_url: string
   property_address: string
   year_built: string
   exterior_type: string
@@ -29,6 +32,8 @@ const EMPTY: FormState = {
   title: '',
   slug: '',
   status: 'active',
+  current_focus: '',
+  drive_url: '',
   property_address: '',
   year_built: '',
   exterior_type: '',
@@ -46,6 +51,8 @@ function dealToForm(deal: Deal): FormState {
     title: deal.title,
     slug: deal.slug,
     status: deal.status,
+    current_focus: deal.current_focus ?? '',
+    drive_url: deal.drive_url ?? '',
     property_address: deal.property_address ?? '',
     year_built: deal.year_built ?? '',
     exterior_type: deal.exterior_type ?? '',
@@ -116,6 +123,8 @@ export default function AdminDealEditor() {
       title: form.title.trim(),
       slug: slugify(form.slug),
       status: form.status,
+      current_focus: form.current_focus.trim() || null,
+      drive_url: form.drive_url.trim() || null,
       property_address: form.property_address || null,
       year_built: form.year_built || null,
       exterior_type: form.exterior_type || null,
@@ -196,6 +205,19 @@ export default function AdminDealEditor() {
               label="Property address"
               value={form.property_address}
               onChange={(v) => update('property_address', v)}
+            />
+          </div>
+          <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <LabeledInput
+              label='Currently working on (shows live as "Now: …")'
+              value={form.current_focus}
+              onChange={(v) => update('current_focus', v)}
+            />
+            <LabeledInput
+              label="Google Drive album link (optional)"
+              type="url"
+              value={form.drive_url}
+              onChange={(v) => update('drive_url', v)}
             />
           </div>
         </section>
@@ -304,6 +326,7 @@ export default function AdminDealEditor() {
 
       {deal && (
         <div className="mt-10 flex flex-col gap-8">
+          <AdminInquiries dealId={deal.id} />
           <AdminMediaManager
             dealId={deal.id}
             coverImagePath={deal.cover_image_path}

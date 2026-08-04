@@ -12,6 +12,8 @@ import DealInfoTab from '../components/DealInfoTab'
 import DocumentList from '../components/DocumentList'
 import IlliquidModal from '../components/IlliquidModal'
 import AlertBanner from '../components/AlertBanner'
+import FinancialStrip from '../components/FinancialStrip'
+import InquiryModal from '../components/InquiryModal'
 
 type Tab = 'overview' | 'media' | 'info' | 'invoices'
 
@@ -29,6 +31,7 @@ export default function DealDetail() {
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
   const [tab, setTab] = useState<Tab>('overview')
+  const [inquiryOpen, setInquiryOpen] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -79,7 +82,17 @@ export default function DealDetail() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
-      {deal.is_illiquid && <IlliquidModal dealId={deal.id} dealTitle={deal.title} reason={deal.alert_reason} />}
+      {deal.is_illiquid && (
+        <IlliquidModal
+          dealId={deal.id}
+          dealTitle={deal.title}
+          reason={deal.alert_reason}
+          onCta={() => setInquiryOpen(true)}
+        />
+      )}
+      {inquiryOpen && (
+        <InquiryModal dealId={deal.id} dealTitle={deal.title} onClose={() => setInquiryOpen(false)} />
+      )}
 
       <Link to="/" className="mb-4 inline-flex items-center gap-1 text-sm text-ink-400 hover:text-white">
         ← All deals
@@ -108,13 +121,42 @@ export default function DealDetail() {
             </span>
           </div>
           {location && <p className="text-sm text-ink-400">{location}</p>}
+          {deal.current_focus && (
+            <p className="flex items-center gap-2 text-sm font-medium text-brand-400">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-brand-400" />
+              Now: {deal.current_focus}
+            </p>
+          )}
           <p className="text-xs text-ink-500">Last updated {formatDate(deal.updated_at)}</p>
+
+          <div className="mt-2 flex flex-wrap gap-2">
+            <button
+              onClick={() => setInquiryOpen(true)}
+              className="rounded-lg bg-gradient-to-r from-brand-500 to-brand-400 px-4 py-2 text-sm font-semibold text-ink-950 shadow-lg shadow-brand-500/20 transition-transform hover:scale-[1.02] active:scale-[0.99] cursor-pointer"
+            >
+              Partner on this deal
+            </button>
+            {deal.drive_url && (
+              <a
+                href={deal.drive_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-lg border border-ink-600 px-4 py-2 text-sm font-medium text-ink-200 transition-colors hover:border-ink-400 hover:text-white"
+              >
+                📁 Photo album ↗
+              </a>
+            )}
+          </div>
         </div>
+      </div>
+
+      <div className="mb-6">
+        <FinancialStrip deal={deal} />
       </div>
 
       {deal.is_illiquid && (
         <div className="mb-6">
-          <AlertBanner reason={deal.alert_reason} />
+          <AlertBanner reason={deal.alert_reason} onCta={() => setInquiryOpen(true)} />
         </div>
       )}
 
@@ -139,7 +181,28 @@ export default function DealDetail() {
             <TaskBoard tasks={tasks} />
           </div>
         )}
-        {tab === 'media' && <MediaGallery dealId={deal.id} />}
+        {tab === 'media' && (
+          <div className="flex flex-col gap-4">
+            {deal.drive_url && (
+              <a
+                href={deal.drive_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 rounded-xl border border-brand-500/30 bg-brand-500/5 px-4 py-3 transition-colors hover:bg-brand-500/10"
+              >
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-brand-500/15 text-lg">
+                  📁
+                </span>
+                <span className="flex-1">
+                  <span className="block text-sm font-semibold text-white">Full photo album on Google Drive</span>
+                  <span className="block text-xs text-ink-400">Every photo and video — opens in a new tab</span>
+                </span>
+                <span className="shrink-0 text-sm text-brand-400">Open ↗</span>
+              </a>
+            )}
+            <MediaGallery dealId={deal.id} />
+          </div>
+        )}
         {tab === 'info' && <DealInfoTab deal={deal} />}
         {tab === 'invoices' && <DocumentList dealId={deal.id} docType="invoice" />}
       </div>

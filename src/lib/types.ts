@@ -26,6 +26,8 @@ export interface Deal {
   budget_variance_note: string | null
 
   cover_image_path: string | null
+  current_focus: string | null
+  drive_url: string | null
 
   is_illiquid: boolean
   alert_reason: string | null
@@ -57,6 +59,17 @@ export interface DealMedia {
   storage_path: string
   caption: string | null
   position: number
+  created_at: string
+}
+
+export interface DealInquiry {
+  id: string
+  deal_id: string
+  name: string
+  email: string | null
+  phone: string | null
+  message: string | null
+  user_id: string | null
   created_at: string
 }
 
