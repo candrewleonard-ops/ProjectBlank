@@ -17,6 +17,13 @@ interface FormState {
   current_focus: string
   drive_url: string
   property_address: string
+  bedrooms: string
+  bathrooms: string
+  square_feet: string
+  garage: string
+  is_partnered: boolean
+  partner_name: string
+  is_public: boolean
   year_built: string
   exterior_type: string
   arv: string
@@ -35,6 +42,13 @@ const EMPTY: FormState = {
   current_focus: '',
   drive_url: '',
   property_address: '',
+  bedrooms: '',
+  bathrooms: '',
+  square_feet: '',
+  garage: '',
+  is_partnered: false,
+  partner_name: '',
+  is_public: false,
   year_built: '',
   exterior_type: '',
   arv: '',
@@ -54,6 +68,13 @@ function dealToForm(deal: Deal): FormState {
     current_focus: deal.current_focus ?? '',
     drive_url: deal.drive_url ?? '',
     property_address: deal.property_address ?? '',
+    bedrooms: deal.bedrooms?.toString() ?? '',
+    bathrooms: deal.bathrooms ?? '',
+    square_feet: deal.square_feet?.toString() ?? '',
+    garage: deal.garage ?? '',
+    is_partnered: deal.is_partnered,
+    partner_name: deal.partner_name ?? '',
+    is_public: deal.is_public,
     year_built: deal.year_built ?? '',
     exterior_type: deal.exterior_type ?? '',
     arv: deal.arv?.toString() ?? '',
@@ -126,6 +147,13 @@ export default function AdminDealEditor() {
       current_focus: form.current_focus.trim() || null,
       drive_url: form.drive_url.trim() || null,
       property_address: form.property_address || null,
+      bedrooms: toNumberOrNull(form.bedrooms),
+      bathrooms: form.bathrooms.trim() || null,
+      square_feet: toNumberOrNull(form.square_feet),
+      garage: form.garage.trim() || null,
+      is_partnered: form.is_partnered,
+      partner_name: form.is_partnered ? form.partner_name.trim() || null : null,
+      is_public: form.is_public,
       year_built: form.year_built || null,
       exterior_type: form.exterior_type || null,
       arv: toNumberOrNull(form.arv),
@@ -226,6 +254,10 @@ export default function AdminDealEditor() {
           <h2 className="mb-3 text-sm font-semibold text-white">Property details</h2>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <LabeledInput label="Year built" value={form.year_built} onChange={(v) => update('year_built', v)} />
+            <LabeledInput label="Bedrooms" type="number" value={form.bedrooms} onChange={(v) => update('bedrooms', v)} />
+            <LabeledInput label="Bathrooms (e.g. 1.5)" value={form.bathrooms} onChange={(v) => update('bathrooms', v)} />
+            <LabeledInput label="Square feet" type="number" value={form.square_feet} onChange={(v) => update('square_feet', v)} />
+            <LabeledInput label="Garage (e.g. 1-car garage)" value={form.garage} onChange={(v) => update('garage', v)} />
             <div>
               <label className="mb-1 block text-xs font-medium text-ink-400">Exterior</label>
               <select
@@ -278,6 +310,39 @@ export default function AdminDealEditor() {
               className="w-full rounded-lg border border-ink-600 bg-ink-800 px-3 py-2 text-sm text-white outline-none focus:border-brand-500"
             />
           </div>
+        </section>
+
+        <section className="rounded-xl border border-ink-700/60 bg-ink-900/40 p-4">
+          <h2 className="mb-3 text-sm font-semibold text-white">Visibility & partnership</h2>
+          <label className="flex items-center gap-2 text-sm text-ink-200">
+            <input
+              type="checkbox"
+              checked={form.is_public}
+              onChange={(e) => update('is_public', e.target.checked)}
+              className="h-4 w-4 accent-brand-500"
+            />
+            Public — everyone can see this deal (unchecked = private, only people you grant access)
+          </label>
+          <label className="mt-3 flex items-center gap-2 text-sm text-ink-200">
+            <input
+              type="checkbox"
+              checked={form.is_partnered}
+              onChange={(e) => update('is_partnered', e.target.checked)}
+              className="h-4 w-4 accent-gold-500"
+            />
+            Partnered project — shows in the "Partnered Projects" section
+          </label>
+          {form.is_partnered && (
+            <div className="mt-3">
+              <label className="mb-1 block text-xs font-medium text-ink-400">Owning entity / partner name</label>
+              <input
+                value={form.partner_name}
+                onChange={(e) => update('partner_name', e.target.value)}
+                placeholder="Isaiah Rodriguez"
+                className="w-full rounded-lg border border-ink-600 bg-ink-800 px-3 py-2 text-sm text-white outline-none focus:border-brand-500"
+              />
+            </div>
+          )}
         </section>
 
         <section className="rounded-xl border border-alert-500/20 bg-ink-900/40 p-4">

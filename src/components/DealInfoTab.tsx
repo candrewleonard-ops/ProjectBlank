@@ -24,6 +24,13 @@ export default function DealInfoTab({ deal }: { deal: Deal }) {
         <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Field label="Location" value={location} />
           <Field label="Year built" value={deal.year_built} />
+          <Field label="Beds / Baths" value={
+            deal.bedrooms !== null || deal.bathrooms
+              ? `${deal.bedrooms ?? '—'} bed / ${deal.bathrooms ?? '—'} bath`
+              : null
+          } />
+          <Field label="Square feet" value={deal.square_feet !== null ? deal.square_feet.toLocaleString() : null} />
+          <Field label="Garage" value={deal.garage} />
           <Field label="Exterior" value={deal.exterior_type} />
           <Field label="ARV (after-repair value)" value={formatCurrency(deal.arv)} />
         </dl>
@@ -80,6 +87,11 @@ export default function DealInfoTab({ deal }: { deal: Deal }) {
             {deal.budget_variance_note}
           </p>
         )}
+      </div>
+
+      <div>
+        <h3 className="mb-3 text-sm font-semibold text-white">Budgets & spreadsheets</h3>
+        <DocumentList dealId={deal.id} docType="sheet" />
       </div>
 
       <div>

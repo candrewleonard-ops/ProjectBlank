@@ -9,6 +9,8 @@ import Dashboard from './pages/Dashboard'
 import DealDetail from './pages/DealDetail'
 import AdminDashboard from './pages/AdminDashboard'
 import AdminDealEditor from './pages/AdminDealEditor'
+import AdminAudience from './pages/AdminAudience'
+import ResetPassword from './pages/ResetPassword'
 
 function App() {
   if (!isSupabaseConfigured) return <ConfigNotice />
@@ -18,6 +20,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route element={<Layout />}>
             {/* Deals are public - no sign-in required to browse. */}
             <Route path="/" element={<Dashboard />} />
@@ -29,6 +32,14 @@ function App() {
               element={
                 <AdminRoute>
                   <AdminDashboard />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/admin/audience"
+              element={
+                <AdminRoute>
+                  <AdminAudience />
                 </AdminRoute>
               }
             />

@@ -13,11 +13,21 @@ export const CONTACT_HREF = `mailto:${CONTACT_EMAIL}?subject=Interested%20in%20f
 // Minimum partnership check size mentioned in investor-facing copy.
 export const PARTNER_MINIMUM = '$20,000'
 
+export const FACEBOOK_PAGE_URL = 'https://www.facebook.com/share/1PFnggBkzR/?mibextid=wwXIfr'
+export const FACEBOOK_CARSON_URL = 'https://www.facebook.com/carson.leonard.843493/'
+
 export const ADDRESS_ON_REQUEST = 'Address available upon request'
 
 // Realtor fees, interest payments, and closing costs, estimated as a share of
 // ARV. Subtracted from ARV - lien to get "projected cash at close".
 export const SELLING_COST_RATE = 0.085
+
+// Cash reserves held on every deal: RESERVE_MONTHS months of payments at
+// MONTHLY_PAYMENT_RATE of the lien per month, plus REHAB_RESERVE_RATE of the
+// rehab budget on hand in cash.
+export const RESERVE_MONTHS = 3
+export const MONTHLY_PAYMENT_RATE = 0.01
+export const REHAB_RESERVE_RATE = 0.15
 
 // The exact street address is never shown publicly. Admins enter the full
 // address (e.g. 123 Main St, Indianapolis, IN 46201) and visitors only ever

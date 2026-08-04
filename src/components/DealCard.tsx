@@ -99,7 +99,7 @@ export default function DealCard({
           </div>
         )}
 
-        {(deal.arv !== null || equity !== null) && (
+        {(deal.arv !== null || equity !== null || deal.is_partnered) && (
           <div className="mt-auto flex gap-2 border-t border-ink-700/60 pt-3 text-xs">
             {deal.arv !== null && (
               <span className="rounded-md bg-ink-800 px-2 py-1 text-ink-300">
@@ -110,6 +110,9 @@ export default function DealCard({
               <span className="rounded-md bg-brand-500/10 px-2 py-1 text-brand-400">
                 Cash at close <span className="font-semibold">{formatCompactCurrency(equity)}</span>
               </span>
+            )}
+            {deal.is_partnered && (
+              <span className="rounded-md bg-gold-500/10 px-2 py-1 text-gold-400">🤝 Partnered</span>
             )}
             {ltarv !== null && ltarv <= 70 && (
               <span className="rounded-md bg-ink-800 px-2 py-1 text-ink-300">

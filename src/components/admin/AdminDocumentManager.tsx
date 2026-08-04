@@ -73,7 +73,7 @@ export default function AdminDocumentManager({ dealId }: { dealId: string }) {
               className="flex items-center gap-3 rounded-lg border border-ink-700/60 bg-ink-900/40 px-3 py-2.5 text-sm"
             >
               <span className="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-ink-800">
-                {doc.doc_type === 'invoice' ? '🧾' : '📄'}
+                {doc.doc_type === 'invoice' ? '🧾' : doc.doc_type === 'sheet' ? '📊' : '📄'}
               </span>
               <span className="flex-1 truncate text-ink-100">{doc.name}</span>
               <span className="shrink-0 rounded-full bg-ink-800 px-2 py-0.5 text-xs capitalize text-ink-400">
@@ -98,11 +98,12 @@ export default function AdminDocumentManager({ dealId }: { dealId: string }) {
         >
           <option value="pdf">Document / PDF</option>
           <option value="invoice">Invoice</option>
+          <option value="sheet">Spreadsheet (CSV)</option>
         </select>
         <input
           ref={fileInput}
           type="file"
-          accept="application/pdf,image/*"
+          accept="application/pdf,image/*,.csv,text/csv"
           multiple
           onChange={(e) => handleFiles(e.target.files)}
           disabled={uploading}

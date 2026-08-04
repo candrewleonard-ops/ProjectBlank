@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { Navigate } from 'react-router-dom'
+import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 import { SITE_NAME, SITE_TAGLINE } from '../lib/site'
 import { LogoMark } from '../components/Logo'
@@ -15,6 +16,23 @@ export default function Login() {
   const [submitting, setSubmitting] = useState(false)
 
   if (!loading && user) return <Navigate to="/" replace />
+
+  async function handleForgotPassword() {
+    setError(null)
+    setNotice(null)
+    if (!email.trim()) {
+      setError('Type your email above first, then hit "Forgot password?" again.')
+      return
+    }
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: `${window.location.origin}/reset-password`,
+    })
+    if (error) {
+      setError(error.message)
+    } else {
+      setNotice('Password reset email sent — check your inbox.')
+    }
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -126,6 +144,16 @@ export default function Login() {
             >
               {submitting ? 'Please wait…' : mode === 'signin' ? 'Sign in' : 'Create account'}
             </button>
+
+            {mode === 'signin' && (
+              <button
+                type="button"
+                onClick={handleForgotPassword}
+                className="block w-full text-center text-xs text-ink-400 hover:text-brand-400 cursor-pointer"
+              >
+                Forgot password?
+              </button>
+            )}
           </form>
         </div>
 

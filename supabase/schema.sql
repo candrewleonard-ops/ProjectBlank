@@ -94,6 +94,19 @@ create table if not exists public.deals (
   -- what's being worked on right now (shows live on cards + deal page)
   current_focus text,
 
+  -- property specs
+  bedrooms integer,
+  bathrooms text,
+  square_feet integer,
+  garage text,
+
+  -- partnered deals ("Partnered Projects" section; partner = owning entity)
+  is_partnered boolean not null default false,
+  partner_name text,
+
+  -- private deals are only visible to admins and emails granted access
+  is_public boolean not null default false,
+
   -- optional Google Drive album link, opens in a new tab
   drive_url text,
 
@@ -107,10 +120,6 @@ create table if not exists public.deals (
 );
 
 alter table public.deals enable row level security;
-
-drop policy if exists "deals: public read" on public.deals;
-create policy "deals: public read" on public.deals
-  for select using (true);
 
 drop policy if exists "deals: admin write" on public.deals;
 create policy "deals: admin write" on public.deals
@@ -144,10 +153,6 @@ create table if not exists public.deal_tasks (
 
 alter table public.deal_tasks enable row level security;
 
-drop policy if exists "deal_tasks: public read" on public.deal_tasks;
-create policy "deal_tasks: public read" on public.deal_tasks
-  for select using (true);
-
 drop policy if exists "deal_tasks: admin write" on public.deal_tasks;
 create policy "deal_tasks: admin write" on public.deal_tasks
   for all to authenticated using (public.is_admin()) with check (public.is_admin());
@@ -172,10 +177,6 @@ create table if not exists public.deal_media (
 
 alter table public.deal_media enable row level security;
 
-drop policy if exists "deal_media: public read" on public.deal_media;
-create policy "deal_media: public read" on public.deal_media
-  for select using (true);
-
 drop policy if exists "deal_media: admin write" on public.deal_media;
 create policy "deal_media: admin write" on public.deal_media
   for all to authenticated using (public.is_admin()) with check (public.is_admin());
@@ -186,7 +187,7 @@ create policy "deal_media: admin write" on public.deal_media
 create table if not exists public.deal_documents (
   id uuid primary key default gen_random_uuid(),
   deal_id uuid not null references public.deals (id) on delete cascade,
-  doc_type text not null check (doc_type in ('pdf', 'invoice')),
+  doc_type text not null check (doc_type in ('pdf', 'invoice', 'sheet')),
   name text not null,
   storage_path text not null,
   created_at timestamptz not null default now()
@@ -194,13 +195,95 @@ create table if not exists public.deal_documents (
 
 alter table public.deal_documents enable row level security;
 
-drop policy if exists "deal_documents: read all authenticated" on public.deal_documents;
-create policy "deal_documents: read all authenticated" on public.deal_documents
-  for select to authenticated using (true);
-
 drop policy if exists "deal_documents: admin write" on public.deal_documents;
 create policy "deal_documents: admin write" on public.deal_documents
   for all to authenticated using (public.is_admin()) with check (public.is_admin());
+
+-- ----------------------------------------------------------------------------
+-- deal_access — per-deal grants keyed by email (applies once they sign in)
+-- ----------------------------------------------------------------------------
+create table if not exists public.deal_access (
+  id uuid primary key default gen_random_uuid(),
+  deal_id uuid not null references public.deals (id) on delete cascade,
+  email text not null,
+  created_at timestamptz not null default now(),
+  unique (deal_id, email)
+);
+
+alter table public.deal_access enable row level security;
+
+drop policy if exists "deal_access: admin all" on public.deal_access;
+create policy "deal_access: admin all" on public.deal_access
+  for all to authenticated using (public.is_admin()) with check (public.is_admin());
+
+-- visibility helper used by the read policies above
+create or replace function public.deal_is_visible(d uuid)
+returns boolean
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select public.is_admin()
+      or exists (select 1 from public.deals where id = d and is_public)
+      or exists (
+        select 1 from public.deal_access a
+        where a.deal_id = d
+          and lower(a.email) = lower(coalesce(auth.jwt() ->> 'email', ''))
+      );
+$$;
+
+-- read policies for deal data, gated on visibility (defined here because they
+-- depend on deal_is_visible above)
+drop policy if exists "deals: visible read" on public.deals;
+create policy "deals: visible read" on public.deals
+  for select using (public.deal_is_visible(id));
+
+drop policy if exists "deal_tasks: visible read" on public.deal_tasks;
+create policy "deal_tasks: visible read" on public.deal_tasks
+  for select using (public.deal_is_visible(deal_id));
+
+drop policy if exists "deal_media: visible read" on public.deal_media;
+create policy "deal_media: visible read" on public.deal_media
+  for select using (public.deal_is_visible(deal_id));
+
+drop policy if exists "deal_documents: visible read" on public.deal_documents;
+create policy "deal_documents: visible read" on public.deal_documents
+  for select to authenticated using (public.deal_is_visible(deal_id));
+
+-- ----------------------------------------------------------------------------
+-- subscribers — email-capture popup list
+-- ----------------------------------------------------------------------------
+create table if not exists public.subscribers (
+  id uuid primary key default gen_random_uuid(),
+  email text not null unique,
+  wants_deal_emails boolean not null default true,
+  wants_live_updates boolean not null default false,
+  created_at timestamptz not null default now()
+);
+
+alter table public.subscribers enable row level security;
+
+drop policy if exists "subscribers: public insert" on public.subscribers;
+create policy "subscribers: public insert" on public.subscribers
+  for insert with check (true);
+
+drop policy if exists "subscribers: admin read" on public.subscribers;
+create policy "subscribers: admin read" on public.subscribers
+  for select to authenticated using (public.is_admin());
+
+drop policy if exists "subscribers: admin update" on public.subscribers;
+create policy "subscribers: admin update" on public.subscribers
+  for update to authenticated using (public.is_admin());
+
+drop policy if exists "subscribers: admin delete" on public.subscribers;
+create policy "subscribers: admin delete" on public.subscribers
+  for delete to authenticated using (public.is_admin());
+
+-- admins can list all profiles (audience page)
+drop policy if exists "profiles: admin read all" on public.profiles;
+create policy "profiles: admin read all" on public.profiles
+  for select to authenticated using (public.is_admin());
 
 -- ----------------------------------------------------------------------------
 -- deal_inquiries — investor "I'm interested" submissions, one per deal

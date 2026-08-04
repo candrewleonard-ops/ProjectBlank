@@ -4,6 +4,7 @@ import type { Deal, TaskStatus } from '../lib/types'
 import DealCard from '../components/DealCard'
 import Spinner from '../components/Spinner'
 import PartnerPromo from '../components/PartnerPromo'
+import EmailCapture from '../components/EmailCapture'
 import { CONTACT_PHONE, CONTACT_PHONE_HREF, SELLING_COST_RATE } from '../lib/site'
 import { formatCompactCurrency } from '../lib/format'
 
@@ -69,6 +70,8 @@ export default function Dashboard() {
 
   if (loading) return <Spinner full />
 
+  const regular = deals.filter((d) => !d.is_partnered)
+  const partnered = deals.filter((d) => d.is_partnered)
   const active = deals.filter((d) => d.status === 'active')
   const portfolioArv = active.reduce((sum, d) => sum + (d.arv ?? 0), 0)
   const portfolioCash = active.reduce((sum, d) => {
@@ -122,7 +125,7 @@ export default function Dashboard() {
       )}
 
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {deals.map((deal, i) => (
+        {regular.map((deal, i) => (
           <DealCard
             key={deal.id}
             deal={deal}
@@ -131,6 +134,28 @@ export default function Dashboard() {
           />
         ))}
       </div>
+
+      {partnered.length > 0 && (
+        <section className="mt-12">
+          <div className="mb-5">
+            <h2 className="text-xl font-semibold tracking-tight text-white">🤝 Partnered Projects</h2>
+            <p className="mt-1 text-sm text-ink-400">
+              Deals we run alongside partner investors — same live transparency, shared upside.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {partnered.map((deal) => (
+              <DealCard
+                key={deal.id}
+                deal={deal}
+                counts={counts[deal.id] ?? { todo: 0, complete: 0, red_alert: 0 }}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
+      <EmailCapture />
     </div>
   )
 }

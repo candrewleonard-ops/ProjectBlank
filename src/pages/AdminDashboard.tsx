@@ -52,12 +52,20 @@ export default function AdminDashboard() {
           <h1 className="text-2xl font-semibold tracking-tight text-white">Manage deals</h1>
           <p className="mt-1 text-sm text-ink-400">Create and update the projects your investors see.</p>
         </div>
-        <Link
-          to="/admin/deals/new"
-          className="shrink-0 rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-ink-950 transition-colors hover:bg-brand-400"
-        >
-          + New deal
-        </Link>
+        <div className="flex shrink-0 gap-2">
+          <Link
+            to="/admin/audience"
+            className="rounded-lg border border-ink-600 px-4 py-2 text-sm font-medium text-ink-200 transition-colors hover:border-ink-400 hover:text-white"
+          >
+            Audience & access
+          </Link>
+          <Link
+            to="/admin/deals/new"
+            className="rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-ink-950 transition-colors hover:bg-brand-400"
+          >
+            + New deal
+          </Link>
+        </div>
       </div>
 
       <section className="mb-8">
@@ -147,6 +155,16 @@ export default function AdminDashboard() {
                 <p className="truncate text-sm text-ink-400">{deal.property_address || deal.slug}</p>
               </div>
               <div className="flex shrink-0 items-center gap-2">
+                {!deal.is_public && (
+                  <span className="rounded-full bg-ink-800 px-2 py-0.5 text-xs font-medium text-ink-300">
+                    🔒 Private
+                  </span>
+                )}
+                {deal.is_partnered && (
+                  <span className="rounded-full bg-gold-500/15 px-2 py-0.5 text-xs font-medium text-gold-400">
+                    Partnered
+                  </span>
+                )}
                 {deal.is_illiquid && (
                   <span className="rounded-full bg-alert-500/15 px-2 py-0.5 text-xs font-medium text-alert-400">
                     Red alert

@@ -7,17 +7,12 @@ const POINTS = [
   {
     icon: '🛡️',
     title: 'Second-position liens',
-    text: 'Your capital is secured against real property on every partnership.',
+    text: 'Our lenders allow them — Rain City Capital outright, Kiavi case by case — and our LLC partners with you, including equity in our projects.',
   },
   {
     icon: '📉',
     title: 'Well-funded deals below 70% LTARV',
     text: 'We buy with margin built in — see the LTARV on every deal page.',
-  },
-  {
-    icon: '📸',
-    title: 'Watch your money work',
-    text: 'Live photos, budgets, and milestones as each project moves.',
   },
 ]
 
@@ -68,7 +63,7 @@ export default function PartnerPromo() {
           </div>
 
           <h3 className="mt-1 text-lg font-semibold text-white">
-            Put your capital on a job site — not in a waiting room.
+            See home blueprints, budget per project, and projected net profits.
           </h3>
 
           <ul className="mt-4 flex flex-col gap-3">

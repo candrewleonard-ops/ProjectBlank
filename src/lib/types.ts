@@ -19,6 +19,10 @@ export interface Deal {
   property_address: string | null
   year_built: string | null
   exterior_type: string | null
+  bedrooms: number | null
+  bathrooms: string | null
+  square_feet: number | null
+  garage: string | null
   arv: number | null
   lien_amount: number | null
   rehab_budget: number | null
@@ -31,6 +35,10 @@ export interface Deal {
 
   is_illiquid: boolean
   alert_reason: string | null
+
+  is_partnered: boolean
+  partner_name: string | null
+  is_public: boolean
 
   created_by: string | null
   created_at: string
@@ -73,7 +81,22 @@ export interface DealInquiry {
   created_at: string
 }
 
-export type DocType = 'pdf' | 'invoice'
+export interface Subscriber {
+  id: string
+  email: string
+  wants_deal_emails: boolean
+  wants_live_updates: boolean
+  created_at: string
+}
+
+export interface DealAccess {
+  id: string
+  deal_id: string
+  email: string
+  created_at: string
+}
+
+export type DocType = 'pdf' | 'invoice' | 'sheet'
 
 export interface DealDocument {
   id: string

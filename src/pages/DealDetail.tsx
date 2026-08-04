@@ -4,7 +4,8 @@ import { supabase } from '../lib/supabase'
 import { getMediaUrl } from '../lib/storage'
 import type { Deal, DealTask } from '../lib/types'
 import { formatDate } from '../lib/format'
-import { publicLocation } from '../lib/site'
+import { useAuth } from '../context/AuthContext'
+import { publicLocation, CONTACT_PHONE, CONTACT_PHONE_HREF } from '../lib/site'
 import Spinner from '../components/Spinner'
 import TaskBoard from '../components/TaskBoard'
 import MediaGallery from '../components/MediaGallery'
@@ -13,6 +14,7 @@ import DocumentList from '../components/DocumentList'
 import IlliquidModal from '../components/IlliquidModal'
 import AlertBanner from '../components/AlertBanner'
 import FinancialStrip from '../components/FinancialStrip'
+import ReservesStrip from '../components/ReservesStrip'
 import InquiryModal from '../components/InquiryModal'
 import AssetShowcase from '../components/AssetShowcase'
 
@@ -27,6 +29,7 @@ const TABS: { id: Tab; label: string }[] = [
 
 export default function DealDetail() {
   const { slug } = useParams<{ slug: string }>()
+  const { user } = useAuth()
   const [deal, setDeal] = useState<Deal | null>(null)
   const [tasks, setTasks] = useState<DealTask[]>([])
   const [loading, setLoading] = useState(true)
@@ -70,8 +73,32 @@ export default function DealDetail() {
   if (notFound || !deal) {
     return (
       <div className="mx-auto max-w-lg px-4 py-20 text-center">
-        <p className="text-lg font-medium text-white">Deal not found</p>
-        <Link to="/" className="mt-3 inline-block text-sm text-brand-400 hover:underline">
+        <div className="mx-auto mb-4 grid h-14 w-14 place-items-center rounded-full bg-ink-800 text-2xl">🔒</div>
+        <p className="text-lg font-medium text-white">
+          {user ? 'This deal is private' : 'This deal may be private'}
+        </p>
+        <p className="mx-auto mt-2 max-w-sm text-sm text-ink-400">
+          {user
+            ? `Your account doesn't have access to this deal yet. Call ${CONTACT_PHONE} and we'll open it up for you.`
+            : 'Sign in with the email we have on file, or reach out and we\'ll grant you access.'}
+        </p>
+        <div className="mt-5 flex justify-center gap-3">
+          {!user && (
+            <Link
+              to="/login"
+              className="rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-ink-950 hover:bg-brand-400"
+            >
+              Sign in
+            </Link>
+          )}
+          <a
+            href={CONTACT_PHONE_HREF}
+            className="rounded-lg border border-ink-600 px-4 py-2 text-sm font-medium text-ink-200 hover:border-ink-400 hover:text-white"
+          >
+            Call {CONTACT_PHONE}
+          </a>
+        </div>
+        <Link to="/" className="mt-5 inline-block text-sm text-brand-400 hover:underline">
           ← Back to deals
         </Link>
       </div>
@@ -122,6 +149,11 @@ export default function DealDetail() {
             </span>
           </div>
           {location && <p className="text-sm text-ink-400">{location}</p>}
+          {deal.is_partnered && (
+            <p className="flex items-center gap-1.5 text-sm text-gold-400">
+              🤝 Partnered project{deal.partner_name ? ` — owning entity: ${deal.partner_name}` : ''}
+            </p>
+          )}
           {deal.current_focus && (
             <p className="flex items-center gap-2 text-sm font-medium text-brand-400">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-brand-400" />
@@ -151,8 +183,12 @@ export default function DealDetail() {
         </div>
       </div>
 
-      <div className="mb-6">
+      <div className="mb-3">
         <FinancialStrip deal={deal} />
+      </div>
+
+      <div className="mb-6">
+        <ReservesStrip deal={deal} />
       </div>
 
       {deal.is_illiquid && (
