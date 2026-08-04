@@ -34,7 +34,7 @@ export default function DealCard({
   return (
     <Link
       to={`/deals/${deal.slug}`}
-      className="group relative flex flex-col overflow-hidden rounded-2xl border border-ink-700/60 bg-ink-900/50 transition-all hover:-translate-y-0.5 hover:border-ink-500 hover:shadow-xl hover:shadow-black/30"
+      className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-ink-700/60 bg-ink-900/50 transition-all duration-300 hover:-translate-y-1 hover:border-brand-500/40 hover:shadow-xl hover:shadow-brand-500/10"
     >
       <div className="relative aspect-[16/10] w-full overflow-hidden bg-ink-800">
         {deal.cover_image_path ? (

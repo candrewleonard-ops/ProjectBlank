@@ -11,7 +11,7 @@ export const CONTACT_EMAIL = 'candrewleonard@gmail.com'
 export const CONTACT_HREF = `mailto:${CONTACT_EMAIL}?subject=Interested%20in%20financing%20a%20deal`
 
 // Minimum partnership check size mentioned in investor-facing copy.
-export const PARTNER_MINIMUM = '$20,000'
+export const PARTNER_MINIMUM = '$10,000'
 
 export const FACEBOOK_PAGE_URL = 'https://www.facebook.com/share/1PFnggBkzR/?mibextid=wwXIfr'
 export const FACEBOOK_CARSON_URL = 'https://www.facebook.com/carson.leonard.843493/'

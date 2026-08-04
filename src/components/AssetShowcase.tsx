@@ -4,6 +4,7 @@ import { getMediaUrl } from '../lib/storage'
 import {
   CONTACT_PHONE,
   CONTACT_PHONE_HREF,
+  FACEBOOK_CARSON_URL,
   PARTNER_MINIMUM,
   SITE_NAME,
 } from '../lib/site'
@@ -26,8 +27,8 @@ const SLIDES = [
   },
   {
     kicker: 'The numbers',
-    title: 'Bought below 70% LTARV',
-    text: 'Margin is built in at purchase — not hoped for at sale. Check the LTARV on any deal page.',
+    title: 'Our assets bought below 70%',
+    text: 'Below 70% LTARV at purchase — margin is built in on day one, not hoped for at sale.',
   },
   {
     kicker: 'Partner with us',
@@ -36,7 +37,7 @@ const SLIDES = [
   },
 ]
 
-const ROTATE_MS = 4200
+const ROTATE_MS = 6500
 
 export default function AssetShowcase() {
   const [covers, setCovers] = useState<string[]>([])
@@ -69,44 +70,63 @@ export default function AssetShowcase() {
     return () => clearInterval(t)
   }, [])
 
-  const current = SLIDES[slide]
-  // Strip renders the list twice for a seamless loop; needs a few images to
-  // look right.
   const strip = covers.length >= 3 ? [...covers, ...covers] : []
 
   return (
     <section className="mt-12 overflow-hidden rounded-2xl border border-ink-700/60 bg-gradient-to-b from-ink-900/80 to-ink-950">
-      <div className="px-6 pb-2 pt-8 text-center sm:px-10">
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-400">
-          {current.kicker}
-        </p>
-        <h2
-          key={slide}
-          className="mx-auto mt-2 max-w-xl text-2xl font-semibold tracking-tight text-white transition-opacity duration-500"
-        >
-          {current.title}
-        </h2>
-        <p className="mx-auto mt-2 max-w-lg text-sm leading-relaxed text-ink-400">{current.text}</p>
+      <div className="pt-8">
+        {/* Sliding track — each slide is full-width; the track glides sideways. */}
+        <div className="overflow-hidden">
+          <div
+            className="flex transition-transform duration-[900ms] ease-in-out motion-reduce:transition-none"
+            style={{ transform: `translateX(-${slide * 100}%)` }}
+          >
+            {SLIDES.map((s) => (
+              <div key={s.title} className="w-full shrink-0 px-6 text-center sm:px-10">
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-400">
+                  {s.kicker}
+                </p>
+                <h2 className="mx-auto mt-2 max-w-xl text-2xl font-semibold tracking-tight text-white">
+                  {s.title}
+                </h2>
+                <p className="mx-auto mt-2 max-w-lg text-sm leading-relaxed text-ink-400">{s.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
 
-        <div className="mt-4 flex items-center justify-center gap-2">
+        <div className="mt-5 flex items-center justify-center gap-2">
           {SLIDES.map((s, i) => (
             <button
               key={s.title}
               onClick={() => setSlide(i)}
               aria-label={`Slide ${i + 1}: ${s.title}`}
-              className={`h-1.5 rounded-full transition-all cursor-pointer ${
-                i === slide ? 'w-6 bg-brand-400' : 'w-1.5 bg-ink-600 hover:bg-ink-500'
+              className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                i === slide ? 'w-7 bg-brand-400' : 'w-1.5 bg-ink-600 hover:bg-ink-500'
               }`}
             />
           ))}
         </div>
 
-        <a
-          href={CONTACT_PHONE_HREF}
-          className="mt-5 inline-block rounded-lg bg-gradient-to-r from-brand-500 to-brand-400 px-5 py-2.5 text-sm font-semibold text-ink-950 shadow-lg shadow-brand-500/20 transition-transform hover:scale-[1.02] active:scale-[0.99]"
-        >
-          Talk deals — call {CONTACT_PHONE}
-        </a>
+        <div className="mt-5 px-6 text-center">
+          <a
+            href={CONTACT_PHONE_HREF}
+            className="inline-block rounded-lg bg-gradient-to-r from-brand-500 to-brand-400 px-5 py-2.5 text-sm font-semibold text-ink-950 shadow-lg shadow-brand-500/20 transition-transform hover:scale-[1.02] active:scale-[0.99]"
+          >
+            Talk deals — call {CONTACT_PHONE}
+          </a>
+          <p className="mt-3 text-sm text-ink-400">
+            💬 DM any of our team members for information —{' '}
+            <a
+              href={FACEBOOK_CARSON_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-brand-400 hover:underline"
+            >
+              Carson Leonard on Facebook
+            </a>
+          </p>
+        </div>
       </div>
 
       {strip.length > 0 && (
