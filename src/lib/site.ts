@@ -2,12 +2,16 @@
 export const SITE_NAME = 'Reinnovation Homes'
 export const SITE_TAGLINE = 'Live deal updates for investors & followers'
 
-// Contact details shown to visitors. Change the phone number here and it
-// updates everywhere it appears on the site.
+// Contact details shown to visitors. Change them here and they update
+// everywhere they appear on the site.
+export const CONTACT_NAME = 'Carson Leonard'
 export const CONTACT_PHONE = '812-890-8917'
 export const CONTACT_PHONE_HREF = 'tel:+18128908917'
-export const CONTACT_EMAIL = 'invest@example.com'
+export const CONTACT_EMAIL = 'candrewleonard@gmail.com'
 export const CONTACT_HREF = `mailto:${CONTACT_EMAIL}?subject=Interested%20in%20financing%20a%20deal`
+
+// Minimum partnership check size mentioned in investor-facing copy.
+export const PARTNER_MINIMUM = '$20,000'
 
 export const ADDRESS_ON_REQUEST = 'Address available upon request'
 

@@ -14,6 +14,7 @@ import IlliquidModal from '../components/IlliquidModal'
 import AlertBanner from '../components/AlertBanner'
 import FinancialStrip from '../components/FinancialStrip'
 import InquiryModal from '../components/InquiryModal'
+import AssetShowcase from '../components/AssetShowcase'
 
 type Tab = 'overview' | 'media' | 'info' | 'invoices'
 
@@ -206,6 +207,8 @@ export default function DealDetail() {
         {tab === 'info' && <DealInfoTab deal={deal} />}
         {tab === 'invoices' && <DocumentList dealId={deal.id} docType="invoice" />}
       </div>
+
+      <AssetShowcase />
     </div>
   )
 }

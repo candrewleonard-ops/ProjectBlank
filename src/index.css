@@ -50,3 +50,25 @@ body {
   background: var(--color-ink-600);
   border-radius: 999px;
 }
+
+/* Continuous film-strip scroll for the asset showcase. The strip renders its
+   content twice, so sliding half its width loops seamlessly. */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.animate-marquee {
+  animation: marquee 45s linear infinite;
+}
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee {
+    animation: none;
+  }
+}

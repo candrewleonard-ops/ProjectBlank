@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
-import { CONTACT_PHONE, CONTACT_PHONE_HREF } from '../lib/site'
+import { CONTACT_NAME, CONTACT_PHONE, CONTACT_PHONE_HREF, CONTACT_EMAIL } from '../lib/site'
 
 export default function InquiryModal({
   dealId,
@@ -114,7 +114,7 @@ export default function InquiryModal({
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     className="w-full rounded-lg border border-ink-600 bg-ink-800 px-3 py-2 text-sm text-white outline-none focus:border-brand-500"
-                    placeholder="Your name"
+                    placeholder={CONTACT_NAME}
                   />
                 </div>
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -125,7 +125,7 @@ export default function InquiryModal({
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="w-full rounded-lg border border-ink-600 bg-ink-800 px-3 py-2 text-sm text-white outline-none focus:border-brand-500"
-                      placeholder="you@example.com"
+                      placeholder={CONTACT_EMAIL}
                     />
                   </div>
                   <div>
@@ -135,7 +135,7 @@ export default function InquiryModal({
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       className="w-full rounded-lg border border-ink-600 bg-ink-800 px-3 py-2 text-sm text-white outline-none focus:border-brand-500"
-                      placeholder="(555) 555-5555"
+                      placeholder={CONTACT_PHONE}
                     />
                   </div>
                 </div>
@@ -148,7 +148,7 @@ export default function InquiryModal({
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     className="w-full resize-none rounded-lg border border-ink-600 bg-ink-800 px-3 py-2 text-sm text-white outline-none focus:border-brand-500"
-                    placeholder="I'd like to hear more about financing this project…"
+                    placeholder="I'd like to hear about financing this project"
                   />
                 </div>
 
@@ -169,6 +169,17 @@ export default function InquiryModal({
                   {submitting ? 'Sending…' : 'Send inquiry'}
                 </button>
               </form>
+
+              <p className="mt-4 border-t border-ink-700/60 pt-3 text-center text-xs text-ink-500">
+                Prefer direct? Call or text {CONTACT_NAME} at{' '}
+                <a href={CONTACT_PHONE_HREF} className="font-semibold text-brand-400 hover:underline">
+                  {CONTACT_PHONE}
+                </a>{' '}
+                ·{' '}
+                <a href={`mailto:${CONTACT_EMAIL}`} className="font-semibold text-brand-400 hover:underline">
+                  {CONTACT_EMAIL}
+                </a>
+              </p>
             </>
           )}
         </div>
