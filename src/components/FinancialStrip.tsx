@@ -27,53 +27,77 @@ function Tile({
 }
 
 export default function FinancialStrip({ deal }: { deal: Deal }) {
+  const lien = deal.lien_amount
+  const budget = deal.rehab_budget
+  const spent = deal.rehab_spent ?? 0
+
+  // Lien splits into the purchase side and the rehab side; the rehab side is
+  // drawn down as work gets paid for.
+  const purchaseLien = lien !== null ? (budget !== null ? lien - budget : lien) : null
+  const hasBudget = budget !== null && budget > 0
+  const drawn = hasBudget ? Math.min(spent, budget) : null
+  const undrawn = hasBudget ? Math.max(budget - spent, 0) : null
+  const drawnPct = hasBudget ? Math.round((spent / budget) * 100) : null
+  const overBudget = drawnPct !== null && drawnPct > 100
+
   const sellingCosts = deal.arv !== null ? Math.round(deal.arv * SELLING_COST_RATE) : null
   const cashAtClose =
-    deal.arv !== null && deal.lien_amount !== null && sellingCosts !== null
-      ? deal.arv - deal.lien_amount - sellingCosts
-      : null
-  const hasBudget = deal.rehab_budget !== null && deal.rehab_budget > 0
-  const spent = deal.rehab_spent ?? 0
-  const budgetPct = hasBudget ? Math.round((spent / deal.rehab_budget!) * 100) : null
-  const overBudget = budgetPct !== null && budgetPct > 100
+    deal.arv !== null && lien !== null && sellingCosts !== null ? deal.arv - lien - sellingCosts : null
 
-  if (deal.arv === null && deal.lien_amount === null && !hasBudget) return null
+  const ltarv = deal.arv !== null && deal.arv > 0 && lien !== null ? Math.round((lien / deal.arv) * 100) : null
+
+  if (deal.arv === null && lien === null && !hasBudget) return null
 
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-      <Tile label="Lien (incl. rehab)" value={formatCurrency(deal.lien_amount)} />
-      <Tile label="ARV" value={formatCurrency(deal.arv)} />
+      <Tile label="Purchase lien" value={formatCurrency(purchaseLien)}>
+        {lien !== null && hasBudget && (
+          <p className="mt-1 text-xs text-ink-500">of {formatCurrency(lien)} total lien</p>
+        )}
+      </Tile>
+
+      <Tile label="Rehab lien" value={hasBudget ? formatCurrency(budget) : '—'}>
+        {hasBudget && (
+          <div className="mt-2">
+            <div className="flex h-1.5 w-full gap-px overflow-hidden rounded-full bg-ink-700">
+              <div
+                className={`h-full ${overBudget ? 'bg-alert-500' : 'bg-gradient-to-r from-brand-500 to-brand-400'}`}
+                style={{ width: `${Math.min(drawnPct!, 100)}%` }}
+              />
+            </div>
+            <p className={`mt-1 text-xs ${overBudget ? 'font-medium text-alert-400' : 'text-ink-500'}`}>
+              {overBudget
+                ? `Drawn ${formatCurrency(spent)} — over budget`
+                : `Drawn ${formatCurrency(drawn)} · Undrawn ${formatCurrency(undrawn)}`}
+            </p>
+          </div>
+        )}
+      </Tile>
+
+      <Tile label="ARV" value={formatCurrency(deal.arv)}>
+        {ltarv !== null && (
+          <span
+            className={`mt-1.5 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${
+              ltarv <= 70 ? 'bg-brand-500/15 text-brand-400' : 'bg-ink-800 text-ink-300'
+            }`}
+          >
+            LTARV {ltarv}%
+          </span>
+        )}
+      </Tile>
+
       <Tile
         label="Realtor fees, interest payments & closing costs due"
         value={sellingCosts === null ? '—' : formatCurrency(sellingCosts)}
       >
         <p className="mt-1 text-xs text-ink-500">{(SELLING_COST_RATE * 100).toFixed(1)}% of ARV</p>
       </Tile>
+
       <Tile
         label="Projected cash at close"
         value={cashAtClose === null ? '—' : formatCurrency(cashAtClose)}
         accent={cashAtClose !== null && cashAtClose > 0}
       />
-      <Tile
-        label="Rehab budget used"
-        value={hasBudget ? `${formatCurrency(spent)} / ${formatCurrency(deal.rehab_budget)}` : '—'}
-      >
-        {budgetPct !== null && (
-          <div className="mt-2">
-            <div className="h-1.5 w-full overflow-hidden rounded-full bg-ink-700">
-              <div
-                className={`h-full rounded-full transition-all ${
-                  overBudget ? 'bg-alert-500' : 'bg-gradient-to-r from-brand-500 to-brand-400'
-                }`}
-                style={{ width: `${Math.min(budgetPct, 100)}%` }}
-              />
-            </div>
-            <p className={`mt-1 text-xs ${overBudget ? 'font-medium text-alert-400' : 'text-ink-500'}`}>
-              {budgetPct}% used{overBudget ? ' — over budget' : ''}
-            </p>
-          </div>
-        )}
-      </Tile>
     </div>
   )
 }

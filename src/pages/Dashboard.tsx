@@ -3,7 +3,9 @@ import { supabase } from '../lib/supabase'
 import type { Deal, TaskStatus } from '../lib/types'
 import DealCard from '../components/DealCard'
 import Spinner from '../components/Spinner'
-import { CONTACT_PHONE, CONTACT_PHONE_HREF } from '../lib/site'
+import PartnerPromo from '../components/PartnerPromo'
+import { CONTACT_PHONE, CONTACT_PHONE_HREF, SELLING_COST_RATE } from '../lib/site'
+import { formatCompactCurrency } from '../lib/format'
 
 interface Counts {
   todo: number
@@ -67,8 +69,16 @@ export default function Dashboard() {
 
   if (loading) return <Spinner full />
 
+  const active = deals.filter((d) => d.status === 'active')
+  const portfolioArv = active.reduce((sum, d) => sum + (d.arv ?? 0), 0)
+  const portfolioCash = active.reduce((sum, d) => {
+    if (d.arv === null || d.lien_amount === null) return sum
+    return sum + (d.arv - d.lien_amount - Math.round(d.arv * SELLING_COST_RATE))
+  }, 0)
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+      <PartnerPromo />
       <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-white">Active deals</h1>
@@ -81,6 +91,23 @@ export default function Dashboard() {
           </a>
         </p>
       </div>
+
+      {active.length > 0 && (portfolioArv > 0 || portfolioCash > 0) && (
+        <div className="mb-8 grid grid-cols-3 gap-3">
+          <div className="rounded-xl border border-ink-700/60 bg-ink-900/40 px-4 py-3 text-center">
+            <p className="text-xl font-semibold text-white">{active.length}</p>
+            <p className="mt-0.5 text-xs text-ink-500">Active project{active.length > 1 ? 's' : ''}</p>
+          </div>
+          <div className="rounded-xl border border-ink-700/60 bg-ink-900/40 px-4 py-3 text-center">
+            <p className="text-xl font-semibold text-white">{formatCompactCurrency(portfolioArv)}</p>
+            <p className="mt-0.5 text-xs text-ink-500">Portfolio ARV</p>
+          </div>
+          <div className="rounded-xl border border-brand-500/30 bg-brand-500/5 px-4 py-3 text-center">
+            <p className="text-xl font-semibold text-brand-400">{formatCompactCurrency(portfolioCash)}</p>
+            <p className="mt-0.5 text-xs text-ink-500">Projected cash at close</p>
+          </div>
+        </div>
+      )}
 
       {error && (
         <p className="rounded-lg border border-alert-500/30 bg-alert-500/10 px-4 py-3 text-sm text-alert-400">

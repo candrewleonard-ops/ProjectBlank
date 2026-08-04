@@ -43,9 +43,25 @@ export default function DealInfoTab({ deal }: { deal: Deal }) {
       <div>
         <h3 className="mb-3 text-sm font-semibold text-white">Financing & rehab budget</h3>
         <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <Field label="Lien (incl. rehab budget)" value={formatCurrency(deal.lien_amount)} />
-          <Field label="Rehab budget" value={formatCurrency(deal.rehab_budget)} />
-          <Field label="Rehab spent to date" value={formatCurrency(deal.rehab_spent)} />
+          <Field label="Total lien (incl. rehab)" value={formatCurrency(deal.lien_amount)} />
+          <Field
+            label="Purchase lien"
+            value={
+              deal.lien_amount !== null
+                ? formatCurrency(deal.lien_amount - (deal.rehab_budget ?? 0))
+                : null
+            }
+          />
+          <Field label="Rehab lien (budget)" value={formatCurrency(deal.rehab_budget)} />
+          <Field label="Rehab drawn to date" value={formatCurrency(deal.rehab_spent)} />
+          <Field
+            label="Undrawn rehab funds"
+            value={
+              deal.rehab_budget !== null
+                ? formatCurrency(Math.max(deal.rehab_budget - (deal.rehab_spent ?? 0), 0))
+                : null
+            }
+          />
           <Field
             label="Budget variance"
             value={

@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { SITE_NAME, SITE_TAGLINE } from '../lib/site'
+import { LogoMark } from '../components/Logo'
 
 export default function Login() {
   const { user, loading, signIn, signUp } = useAuth()
@@ -40,8 +41,8 @@ export default function Login() {
     <div className="flex min-h-screen items-center justify-center px-4 py-10">
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 grid h-12 w-12 place-items-center rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 text-lg font-bold text-ink-950">
-            {SITE_NAME.charAt(0)}
+          <div className="mx-auto mb-3 flex justify-center text-white">
+            <LogoMark className="h-16 w-16" />
           </div>
           <h1 className="text-2xl font-semibold tracking-tight text-white">{SITE_NAME}</h1>
           <p className="mt-1 text-sm text-ink-400">{SITE_TAGLINE}</p>

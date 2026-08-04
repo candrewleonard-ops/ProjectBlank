@@ -1,6 +1,7 @@
 import { Link, NavLink, Outlet } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { SITE_NAME, CONTACT_PHONE, CONTACT_PHONE_HREF } from '../lib/site'
+import Logo from './Logo'
 
 export default function Layout() {
   const { user, profile, isAdmin, signOut } = useAuth()
@@ -9,13 +10,8 @@ export default function Layout() {
     <div className="min-h-screen flex flex-col">
       <header className="sticky top-0 z-30 border-b border-ink-700/60 bg-ink-950/85 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
-          <Link to="/" className="flex items-center gap-2 group">
-            <span className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-to-br from-brand-400 to-brand-600 text-sm font-bold text-ink-950 shadow-[0_0_0_1px_rgba(255,255,255,0.08)]">
-              {SITE_NAME.charAt(0)}
-            </span>
-            <span className="text-lg font-semibold tracking-tight text-white group-hover:text-brand-400 transition-colors">
-              {SITE_NAME}
-            </span>
+          <Link to="/" aria-label={SITE_NAME} className="group transition-opacity hover:opacity-85">
+            <Logo />
           </Link>
 
           <nav className="flex items-center gap-1 sm:gap-2">

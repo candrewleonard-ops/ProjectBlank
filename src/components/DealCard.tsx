@@ -26,6 +26,10 @@ export default function DealCard({
     deal.arv !== null && deal.lien_amount !== null
       ? deal.arv - deal.lien_amount - Math.round(deal.arv * SELLING_COST_RATE)
       : null
+  const ltarv =
+    deal.arv !== null && deal.arv > 0 && deal.lien_amount !== null
+      ? Math.round((deal.lien_amount / deal.arv) * 100)
+      : null
 
   return (
     <Link
@@ -105,6 +109,11 @@ export default function DealCard({
             {equity !== null && equity > 0 && (
               <span className="rounded-md bg-brand-500/10 px-2 py-1 text-brand-400">
                 Cash at close <span className="font-semibold">{formatCompactCurrency(equity)}</span>
+              </span>
+            )}
+            {ltarv !== null && ltarv <= 70 && (
+              <span className="rounded-md bg-ink-800 px-2 py-1 text-ink-300">
+                LTARV <span className="font-semibold text-white">{ltarv}%</span>
               </span>
             )}
           </div>

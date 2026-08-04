@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
+import { CONTACT_PHONE, CONTACT_PHONE_HREF } from '../lib/site'
 
 export default function InquiryModal({
   dealId,
@@ -46,7 +47,11 @@ export default function InquiryModal({
     })
     setSubmitting(false)
     if (insertError) {
-      setError(insertError.message)
+      // Don't surface raw database errors to investors — give them a way to
+      // reach us that always works.
+      setError(
+        `We couldn't send that just now — call or text us at ${CONTACT_PHONE} and we'll talk right away.`,
+      )
       return
     }
     setSent(true)
@@ -149,7 +154,10 @@ export default function InquiryModal({
 
                 {error && (
                   <p className="rounded-lg border border-alert-500/30 bg-alert-500/10 px-3 py-2 text-sm text-alert-400">
-                    {error}
+                    {error}{' '}
+                    <a href={CONTACT_PHONE_HREF} className="font-semibold underline">
+                      Call now
+                    </a>
                   </p>
                 )}
 
