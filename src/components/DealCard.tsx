@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import type { Deal } from '../lib/types'
 import { getMediaUrl } from '../lib/storage'
-import { publicLocation } from '../lib/site'
+import { publicLocation, SELLING_COST_RATE } from '../lib/site'
 import { formatCompactCurrency } from '../lib/format'
 
 interface TaskCounts {
@@ -22,7 +22,10 @@ export default function DealCard({
   const total = counts.todo + counts.complete + counts.red_alert
   const pct = total > 0 ? Math.round((counts.complete / total) * 100) : 0
   const location = publicLocation(deal.property_address)
-  const equity = deal.arv !== null && deal.lien_amount !== null ? deal.arv - deal.lien_amount : null
+  const equity =
+    deal.arv !== null && deal.lien_amount !== null
+      ? deal.arv - deal.lien_amount - Math.round(deal.arv * SELLING_COST_RATE)
+      : null
 
   return (
     <Link
@@ -101,7 +104,7 @@ export default function DealCard({
             )}
             {equity !== null && equity > 0 && (
               <span className="rounded-md bg-brand-500/10 px-2 py-1 text-brand-400">
-                Projected equity <span className="font-semibold">{formatCompactCurrency(equity)}</span>
+                Cash at close <span className="font-semibold">{formatCompactCurrency(equity)}</span>
               </span>
             )}
           </div>

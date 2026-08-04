@@ -1,5 +1,6 @@
 import type { Deal } from '../lib/types'
 import { formatCurrency } from '../lib/format'
+import { SELLING_COST_RATE } from '../lib/site'
 
 function Tile({
   label,
@@ -26,7 +27,11 @@ function Tile({
 }
 
 export default function FinancialStrip({ deal }: { deal: Deal }) {
-  const equity = deal.arv !== null && deal.lien_amount !== null ? deal.arv - deal.lien_amount : null
+  const sellingCosts = deal.arv !== null ? Math.round(deal.arv * SELLING_COST_RATE) : null
+  const cashAtClose =
+    deal.arv !== null && deal.lien_amount !== null && sellingCosts !== null
+      ? deal.arv - deal.lien_amount - sellingCosts
+      : null
   const hasBudget = deal.rehab_budget !== null && deal.rehab_budget > 0
   const spent = deal.rehab_spent ?? 0
   const budgetPct = hasBudget ? Math.round((spent / deal.rehab_budget!) * 100) : null
@@ -35,13 +40,19 @@ export default function FinancialStrip({ deal }: { deal: Deal }) {
   if (deal.arv === null && deal.lien_amount === null && !hasBudget) return null
 
   return (
-    <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
       <Tile label="Lien (incl. rehab)" value={formatCurrency(deal.lien_amount)} />
       <Tile label="ARV" value={formatCurrency(deal.arv)} />
       <Tile
-        label="Projected equity"
-        value={equity === null ? '—' : formatCurrency(equity)}
-        accent={equity !== null && equity > 0}
+        label="Realtor fees, interest payments & closing costs due"
+        value={sellingCosts === null ? '—' : formatCurrency(sellingCosts)}
+      >
+        <p className="mt-1 text-xs text-ink-500">{(SELLING_COST_RATE * 100).toFixed(1)}% of ARV</p>
+      </Tile>
+      <Tile
+        label="Projected cash at close"
+        value={cashAtClose === null ? '—' : formatCurrency(cashAtClose)}
+        accent={cashAtClose !== null && cashAtClose > 0}
       />
       <Tile
         label="Rehab budget used"

@@ -11,6 +11,10 @@ export const CONTACT_HREF = `mailto:${CONTACT_EMAIL}?subject=Interested%20in%20f
 
 export const ADDRESS_ON_REQUEST = 'Address available upon request'
 
+// Realtor fees, interest payments, and closing costs, estimated as a share of
+// ARV. Subtracted from ARV - lien to get "projected cash at close".
+export const SELLING_COST_RATE = 0.085
+
 // The exact street address is never shown publicly. Admins enter the full
 // address (e.g. 123 Main St, Indianapolis, IN 46201) and visitors only ever
 // see everything after the first comma (Indianapolis, IN 46201).
