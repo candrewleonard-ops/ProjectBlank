@@ -115,6 +115,7 @@ export default function DealDetail() {
           dealId={deal.id}
           dealTitle={deal.title}
           reason={deal.alert_reason}
+          rehabBudget={deal.rehab_budget}
           onCta={() => setInquiryOpen(true)}
         />
       )}
