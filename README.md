@@ -1,117 +1,71 @@
-# Cornerstone — Investor Deal Portal
+# Reinnovation Homes — Investor Deal Portal
 
-A simple, live-updating portal where your investors and followers sign in and
-see the status of every active deal: what's complete, what's still to do, and
-any red-alert items (with a reason). Each deal has its own page with photos &
-video, PDFs, invoices, and a "Deal Information" template (address, year
-built, exterior, ARV, lien/rehab budget, budget variance).
+Live at **https://portal.worktopcrm.com** — the ZGH Holdings flip portfolio,
+updated live for investors and followers.
 
-Stack: **React + Vite + TypeScript + Tailwind**, **Supabase** (auth, Postgres
-database, file storage), deployed as a static site on **Cloudflare Pages**.
+Stack: **React + Vite + TypeScript + Tailwind**, **Supabase** (auth, Postgres,
+storage), deployed as a static site on **Cloudflare Pages**.
 
----
+## What it does
 
-## 1. Create your Supabase project
+- **Public portfolio** — anyone can browse public deals: live status board
+  (to-do / complete / red alerts), photos & video, financial strip (purchase
+  lien + rehab lien with drawn/undrawn, ARV with LTARV badge, realtor
+  fees/interest/closing costs at 8.5% of ARV, projected cash at close), cash
+  reserves (3 months of payments + 15% of rehab budget), and a CSV budget
+  viewer that renders spreadsheets as tables in the site.
+- **Private deals** — deals default to private; visibility is enforced by
+  database rules. Grant access per-email in Admin → Audience & access; the
+  grant applies as soon as that person signs in with the email.
+- **Lead capture** — per-deal "Partner on this deal" inquiry form (works
+  signed-out), an email-capture bar with marketing checkboxes, and a
+  once-per-session partner promo. Everything lands in the admin views.
+- **Admin** (role-gated + RLS-enforced) — manage deals, the status board,
+  media (cover photos), documents/invoices/CSVs, inquiries, subscribers, and
+  the per-deal access grid.
+- Red-alert deals show a gentle bottom-left "Financing open" card (15% of the
+  rehab budget ask) instead of a blocking popup.
 
-1. Go to [supabase.com](https://supabase.com) and create a new project (the
-   free tier is enough to start).
-2. Open **SQL Editor** in the Supabase dashboard, paste the entire contents of
-   [`supabase/schema.sql`](./supabase/schema.sql), and run it. This creates:
-   - `profiles` (auto-created for every signed-up user, `role` is `investor`
-     by default)
-   - `deals`, `deal_tasks`, `deal_media`, `deal_documents`
-   - Row Level Security so any signed-in user can **read** everything, but
-     only an `admin` profile can **write**
-   - two storage buckets: `deal-media` (public, for photos/video) and
-     `deal-documents` (private, PDFs & invoices served through short-lived
-     signed URLs)
-3. In **Project Settings -> API**, copy the **Project URL** and the
-   **anon public key**.
+## Setup (fresh project)
 
-## 2. Configure the app
+1. Create a Supabase project, run [`supabase/schema.sql`](./supabase/schema.sql)
+   in the SQL Editor.
+2. `cp .env.example .env` and fill in the project URL + anon key
+   (Project Settings → API).
+3. `npm install && npm run dev`
+4. Sign up in the app, then promote yourself:
+   `update public.profiles set role = 'admin' where email = 'you@example.com';`
+5. In Supabase **Authentication → URL Configuration** set the Site URL to your
+   deployed domain and add `https://<your-domain>/**` to Redirect URLs so
+   password-reset emails land correctly.
 
-```bash
-cp .env.example .env
-```
+### Upgrading an existing database
 
-Fill in `.env`:
+Older live projects: run [`supabase/upgrade-2026-08.sql`](./supabase/upgrade-2026-08.sql)
+then [`supabase/upgrade-2026-08b.sql`](./supabase/upgrade-2026-08b.sql), once
+each, in order. Both are safe to re-run.
 
-```
-VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-public-key
-```
+## Deploy (Cloudflare Pages)
 
-Install and run:
+Connect this repo, build command `npm run build`, output `dist`, and set
+`VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` as environment variables.
+Attach the domain under Custom domains. `public/_redirects` handles SPA
+routing.
 
-```bash
-npm install
-npm run dev
-```
+## Where things are configured
 
-## 3. Make yourself an admin
+- `src/lib/site.ts` — site name, contact phone/email, Facebook links, partner
+  minimum, selling-cost rate (8.5%), reserve rates (1%/mo × 3 + 15%).
+- `src/index.css` — brand palette and animations.
+- `src/components/Logo.tsx` + `public/favicon.svg` — the Re roofline mark.
 
-Sign up in the app once (Sign up tab on the login screen), then in the
-Supabase **SQL Editor** run:
+## Everyday use
 
-```sql
-update public.profiles set role = 'admin' where email = 'you@example.com';
-```
-
-Sign out and back in. You'll now see an **Admin** tab where you can create
-deals, upload photos/video, upload PDFs and invoices, and update the status
-board (To do / Complete / Red alert). Everyone else who signs up is a
-read-only investor.
-
-Supabase's client SDK persists the session in the browser automatically, so
-signed-in users stay signed in across visits until they explicitly sign out.
-
-## 4. How it's organized
-
-- **Dashboard** (`/`) — a grid of active deals. Only the first deal's cover
-  photo loads eagerly; every other image (including full galleries) is lazy
-  loaded so the page stays fast even with many deals.
-- **Deal page** (`/deals/:slug`) — one page per deal with four tabs:
-  **Overview** (status board), **Photos & Video** (lazy-loaded gallery,
-  fetched only when the tab is opened), **Deal Information** (the property
-  template + PDFs), **Invoices**.
-- **Red alerts** — mark a deal "illiquid" in the admin panel and add a reason
-  (e.g. "Illiquid Project"). Investors see a persistent banner on the deal
-  page plus a one-time-per-session pop-up with a "Contact us about
-  financing" call to action. It won't nag them on every visit — once
-  dismissed, it stays dismissed for that browser session.
-
-To re-brand, edit `src/lib/site.ts` (site name, tagline, contact email).
-
-## 5. Deploy to Cloudflare Pages
-
-This is a static single-page app — no server required.
-
-1. Push this repo to GitHub (or GitLab).
-2. In the Cloudflare dashboard: **Workers & Pages -> Create -> Pages ->
-   Connect to Git**, and pick this repo.
-3. Build settings:
-   - **Build command:** `npm run build`
-   - **Build output directory:** `dist`
-4. Add the two environment variables from your `.env` (`VITE_SUPABASE_URL`,
-   `VITE_SUPABASE_ANON_KEY`) under **Settings -> Environment variables**.
-5. Deploy. Then attach your domain under **Custom domains** — since
-   Cloudflare already manages your domain's DNS, this is a couple of clicks.
-
-`public/_redirects` is already set up so client-side routes like
-`/deals/some-deal` work on refresh and direct link.
-
-## 6. Upgrading an existing live site
-
-If your Supabase project was created before the inquiries/current-focus
-update, run [`supabase/upgrade-2026-08.sql`](./supabase/upgrade-2026-08.sql)
-once in the SQL Editor. It adds the new deal fields, the investor-inquiry
-table, and public (logged-out) read access to match the public site.
-
-## 7. Everyday use
-
-- Add a new deal in **Admin -> New deal**, fill in the property template,
-  save, then upload photos/video and documents from the same page.
-- Update the status board any time — investors see the change on their next
-  page load, no redeploy needed (it's all live data from Supabase).
-- Flip "This deal is illiquid" on/off any time to control the alert pop-up
-  and banner.
+- Admin → deal → "Currently working on" drives the live "Now:" line on cards.
+- Upload a cover photo per deal (Photos & video → Set cover) — cards, deal
+  pages, and the film-strip showcase all pull from it.
+- New deals start private; tick "Public" to publish, or grant individual
+  emails in Audience & access.
+- All investor-facing numbers (LTARV, cash at close, reserves, lien split)
+  compute from ARV / lien / rehab budget / rehab spent — keep those four
+  current and everything else follows.
