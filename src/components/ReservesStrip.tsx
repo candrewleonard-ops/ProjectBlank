@@ -25,10 +25,10 @@ export default function ReservesStrip({ deal }: { deal: Deal }) {
           </span>
           <div>
             <p className="text-sm font-semibold text-white">
-              Cash reserves held: <span className="text-gold-400">{formatCurrency(total)}</span>
+              Cash reserves needed: <span className="text-gold-400">{formatCurrency(total)}</span>
             </p>
             <p className="text-xs text-ink-400">
-              Every deal carries reserves so payments and work never stall.
+              Our reserve target on every deal — so payments and work never stall.
             </p>
           </div>
         </div>
