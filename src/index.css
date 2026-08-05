@@ -104,6 +104,20 @@ body {
   animation: gradient-pan 7s ease infinite;
 }
 
+/* Light sweep across a card on hover. */
+.card-shine::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.06) 50%, transparent 60%);
+  transform: translateX(-130%);
+  transition: transform 0.7s ease;
+  pointer-events: none;
+}
+.card-shine:hover::after {
+  transform: translateX(130%);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-marquee,
   .animate-fade-up,
@@ -113,5 +127,8 @@ body {
   .animate-fade-up {
     opacity: 1;
     transform: none;
+  }
+  .card-shine::after {
+    display: none;
   }
 }

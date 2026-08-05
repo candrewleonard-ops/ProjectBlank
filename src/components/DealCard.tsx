@@ -2,7 +2,8 @@ import { Link } from 'react-router-dom'
 import type { Deal } from '../lib/types'
 import { getMediaUrl } from '../lib/storage'
 import { publicLocation, SELLING_COST_RATE } from '../lib/site'
-import { formatCompactCurrency } from '../lib/format'
+import { formatCompactCurrency, formatRelativeTime } from '../lib/format'
+import { LogoMark } from './Logo'
 
 interface TaskCounts {
   todo: number
@@ -34,7 +35,7 @@ export default function DealCard({
   return (
     <Link
       to={`/deals/${deal.slug}`}
-      className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-ink-700/60 bg-ink-900/50 transition-all duration-300 hover:-translate-y-1 hover:border-brand-500/40 hover:shadow-xl hover:shadow-brand-500/10"
+      className="card-shine group relative flex h-full flex-col overflow-hidden rounded-2xl border border-ink-700/60 bg-ink-900/50 transition-all duration-300 hover:-translate-y-1 hover:border-brand-500/40 hover:shadow-xl hover:shadow-brand-500/10"
     >
       <div className="relative aspect-[16/10] w-full overflow-hidden bg-ink-800">
         {deal.cover_image_path ? (
@@ -46,8 +47,8 @@ export default function DealCard({
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
-          <div className="grid h-full w-full place-items-center text-ink-600">
-            <span className="text-3xl">🏠</span>
+          <div className="grid h-full w-full place-items-center bg-gradient-to-br from-ink-800 to-ink-900 text-ink-500">
+            <LogoMark className="h-14 w-14 opacity-40" />
           </div>
         )}
 
@@ -66,7 +67,10 @@ export default function DealCard({
 
       <div className="flex flex-1 flex-col gap-3 p-4">
         <div>
-          <h3 className="font-semibold text-white group-hover:text-brand-400 transition-colors">{deal.title}</h3>
+          <div className="flex items-baseline justify-between gap-2">
+            <h3 className="font-semibold text-white group-hover:text-brand-400 transition-colors">{deal.title}</h3>
+            <span className="shrink-0 text-[11px] text-ink-500">{formatRelativeTime(deal.updated_at)}</span>
+          </div>
           {location && <p className="mt-0.5 text-sm text-ink-400">{location}</p>}
         </div>
 
