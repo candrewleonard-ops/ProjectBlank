@@ -47,12 +47,20 @@ export default function Layout() {
                 </button>
               </>
             ) : (
-              <a
-                href={CONTACT_PHONE_HREF}
-                className="ml-1 rounded-md bg-brand-500 px-3 py-1.5 text-sm font-semibold text-ink-950 transition-colors hover:bg-brand-400"
-              >
-                Call {CONTACT_PHONE}
-              </a>
+              <>
+                <NavLink
+                  to="/login"
+                  className="rounded-md px-3 py-1.5 text-sm font-medium text-ink-300 transition-colors hover:text-white"
+                >
+                  Sign in
+                </NavLink>
+                <a
+                  href={CONTACT_PHONE_HREF}
+                  className="ml-1 rounded-md bg-brand-500 px-3 py-1.5 text-sm font-semibold text-ink-950 transition-colors hover:bg-brand-400"
+                >
+                  Call {CONTACT_PHONE}
+                </a>
+              </>
             )}
           </nav>
         </div>
