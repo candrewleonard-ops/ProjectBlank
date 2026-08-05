@@ -110,6 +110,20 @@ create table if not exists public.deals (
   -- optional Google Drive album link, opens in a new tab
   drive_url text,
 
+  -- open funding raise shown as a progress bar (null target = no raise)
+  raise_target numeric,
+  raise_committed numeric not null default 0,
+
+  -- sale results for the track-record page (set when status = completed)
+  purchase_price numeric,
+  sold_price numeric,
+  sold_date date,
+  lender_outcome text,
+
+  -- before/after comparison images (storage paths in deal-media)
+  before_image_path text,
+  after_image_path text,
+
   -- red alert / illiquid popup
   is_illiquid boolean not null default false,
   alert_reason text,

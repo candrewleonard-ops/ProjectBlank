@@ -17,6 +17,10 @@ import FinancialStrip from '../components/FinancialStrip'
 import ReservesStrip from '../components/ReservesStrip'
 import InquiryModal from '../components/InquiryModal'
 import AssetShowcase from '../components/AssetShowcase'
+import FundingBar from '../components/FundingBar'
+import PayoffCalculator from '../components/PayoffCalculator'
+import BeforeAfterSlider from '../components/BeforeAfterSlider'
+import QuickEditPanel from '../components/admin/QuickEditPanel'
 
 type Tab = 'overview' | 'media' | 'info' | 'invoices'
 
@@ -29,13 +33,14 @@ const TABS: { id: Tab; label: string }[] = [
 
 export default function DealDetail() {
   const { slug } = useParams<{ slug: string }>()
-  const { user } = useAuth()
+  const { user, isAdmin } = useAuth()
   const [deal, setDeal] = useState<Deal | null>(null)
   const [tasks, setTasks] = useState<DealTask[]>([])
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
   const [tab, setTab] = useState<Tab>('overview')
   const [inquiryOpen, setInquiryOpen] = useState(false)
+  const [inquiryAmount, setInquiryAmount] = useState<number | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -120,12 +125,22 @@ export default function DealDetail() {
         />
       )}
       {inquiryOpen && (
-        <InquiryModal dealId={deal.id} dealTitle={deal.title} onClose={() => setInquiryOpen(false)} />
+        <InquiryModal
+          dealId={deal.id}
+          dealTitle={deal.title}
+          amount={inquiryAmount}
+          onClose={() => {
+            setInquiryOpen(false)
+            setInquiryAmount(null)
+          }}
+        />
       )}
 
       <Link to="/" className="mb-4 inline-flex items-center gap-1 text-sm text-ink-400 hover:text-white">
         ← All deals
       </Link>
+
+      {isAdmin && <QuickEditPanel deal={deal} onSaved={setDeal} />}
 
       <div className="mb-6 grid grid-cols-1 gap-5 sm:grid-cols-[220px_1fr]">
         <div className="aspect-[4/3] w-full overflow-hidden rounded-xl border border-ink-700/60 bg-ink-800 sm:aspect-square">
@@ -184,6 +199,12 @@ export default function DealDetail() {
         </div>
       </div>
 
+      {deal.raise_target !== null && deal.raise_target > 0 && (
+        <div className="mb-3">
+          <FundingBar deal={deal} />
+        </div>
+      )}
+
       <div className="mb-3">
         <FinancialStrip deal={deal} />
       </div>
@@ -214,9 +235,32 @@ export default function DealDetail() {
 
       <div>
         {tab === 'overview' && (
-          <div>
-            <h2 className="mb-3 text-sm font-semibold text-white">Project status</h2>
-            <TaskBoard tasks={tasks} />
+          <div className="flex flex-col gap-8">
+            <div>
+              <h2 className="mb-3 text-sm font-semibold text-white">Project status</h2>
+              <TaskBoard tasks={tasks} />
+            </div>
+
+            {deal.before_image_path && deal.after_image_path && (
+              <div>
+                <h2 className="mb-3 text-sm font-semibold text-white">Before & after</h2>
+                <BeforeAfterSlider
+                  beforeUrl={getMediaUrl(deal.before_image_path)}
+                  afterUrl={getMediaUrl(deal.after_image_path)}
+                  alt={deal.title}
+                />
+              </div>
+            )}
+
+            {deal.status === 'active' && (
+              <PayoffCalculator
+                raiseTarget={deal.raise_target}
+                onCta={(amount) => {
+                  setInquiryAmount(amount)
+                  setInquiryOpen(true)
+                }}
+              />
+            )}
           </div>
         )}
         {tab === 'media' && (

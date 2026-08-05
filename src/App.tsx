@@ -11,6 +11,7 @@ import AdminDashboard from './pages/AdminDashboard'
 import AdminDealEditor from './pages/AdminDealEditor'
 import AdminAudience from './pages/AdminAudience'
 import ResetPassword from './pages/ResetPassword'
+import TrackRecord from './pages/TrackRecord'
 
 function App() {
   if (!isSupabaseConfigured) return <ConfigNotice />
@@ -25,6 +26,7 @@ function App() {
             {/* Deals are public - no sign-in required to browse. */}
             <Route path="/" element={<Dashboard />} />
             <Route path="/deals/:slug" element={<DealDetail />} />
+            <Route path="/track-record" element={<TrackRecord />} />
 
             {/* Admin screens still require an admin account. */}
             <Route

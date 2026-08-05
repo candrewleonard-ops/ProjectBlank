@@ -7,11 +7,17 @@ import Spinner from '../Spinner'
 export default function AdminMediaManager({
   dealId,
   coverImagePath,
+  beforeImagePath,
+  afterImagePath,
   onCoverChange,
+  onBeforeAfterChange,
 }: {
   dealId: string
   coverImagePath: string | null
+  beforeImagePath?: string | null
+  afterImagePath?: string | null
   onCoverChange: (path: string) => void
+  onBeforeAfterChange?: (field: 'before_image_path' | 'after_image_path', path: string | null) => void
 }) {
   const [media, setMedia] = useState<DealMedia[]>([])
   const [loading, setLoading] = useState(true)
@@ -62,6 +68,13 @@ export default function AdminMediaManager({
     await supabase.from('deals').update({ cover_image_path: item.storage_path }).eq('id', dealId)
   }
 
+  async function setBeforeAfter(item: DealMedia, field: 'before_image_path' | 'after_image_path') {
+    const current = field === 'before_image_path' ? beforeImagePath : afterImagePath
+    const next = current === item.storage_path ? null : item.storage_path
+    onBeforeAfterChange?.(field, next)
+    await supabase.from('deals').update({ [field]: next }).eq('id', dealId)
+  }
+
   async function remove(item: DealMedia) {
     if (!confirm('Remove this file?')) return
     setMedia((m) => m.filter((x) => x.id !== item.id))
@@ -79,6 +92,8 @@ export default function AdminMediaManager({
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
           {media.map((item) => {
             const isCover = item.storage_path === coverImagePath
+            const isBefore = item.storage_path === beforeImagePath
+            const isAfter = item.storage_path === afterImagePath
             return (
               <div
                 key={item.id}
@@ -91,23 +106,55 @@ export default function AdminMediaManager({
                 ) : (
                   <video src={getMediaUrl(item.storage_path)} className="h-full w-full object-cover" />
                 )}
-                {isCover && (
-                  <span className="absolute left-1.5 top-1.5 rounded-full bg-brand-500 px-1.5 py-0.5 text-[10px] font-semibold text-ink-950">
-                    Cover
-                  </span>
-                )}
-                <div className="absolute inset-0 flex items-end justify-between gap-1 bg-gradient-to-t from-black/70 via-transparent to-transparent p-1.5 opacity-0 transition-opacity group-hover:opacity-100">
-                  {!isCover && item.media_type === 'photo' && (
-                    <button
-                      onClick={() => setCover(item)}
-                      className="rounded bg-white/90 px-1.5 py-1 text-[10px] font-medium text-ink-950 cursor-pointer"
-                    >
-                      Set cover
-                    </button>
+                <div className="absolute left-1.5 top-1.5 flex flex-wrap gap-1">
+                  {isCover && (
+                    <span className="rounded-full bg-brand-500 px-1.5 py-0.5 text-[10px] font-semibold text-ink-950">
+                      Cover
+                    </span>
+                  )}
+                  {isBefore && (
+                    <span className="rounded-full bg-ink-950/90 px-1.5 py-0.5 text-[10px] font-semibold text-white">
+                      Before
+                    </span>
+                  )}
+                  {isAfter && (
+                    <span className="rounded-full bg-gold-500 px-1.5 py-0.5 text-[10px] font-semibold text-ink-950">
+                      After
+                    </span>
+                  )}
+                </div>
+                <div className="absolute inset-0 flex flex-col justify-end gap-1 bg-gradient-to-t from-black/80 via-transparent to-transparent p-1.5 opacity-0 transition-opacity group-hover:opacity-100">
+                  {item.media_type === 'photo' && (
+                    <div className="flex flex-wrap gap-1">
+                      {!isCover && (
+                        <button
+                          onClick={() => setCover(item)}
+                          className="rounded bg-white/90 px-1.5 py-1 text-[10px] font-medium text-ink-950 cursor-pointer"
+                        >
+                          Cover
+                        </button>
+                      )}
+                      {onBeforeAfterChange && (
+                        <>
+                          <button
+                            onClick={() => setBeforeAfter(item, 'before_image_path')}
+                            className="rounded bg-ink-950/90 px-1.5 py-1 text-[10px] font-medium text-white cursor-pointer"
+                          >
+                            {isBefore ? 'Unset before' : 'Before'}
+                          </button>
+                          <button
+                            onClick={() => setBeforeAfter(item, 'after_image_path')}
+                            className="rounded bg-gold-500/90 px-1.5 py-1 text-[10px] font-medium text-ink-950 cursor-pointer"
+                          >
+                            {isAfter ? 'Unset after' : 'After'}
+                          </button>
+                        </>
+                      )}
+                    </div>
                   )}
                   <button
                     onClick={() => remove(item)}
-                    className="ml-auto rounded bg-alert-500/90 px-1.5 py-1 text-[10px] font-medium text-white cursor-pointer"
+                    className="self-end rounded bg-alert-500/90 px-1.5 py-1 text-[10px] font-medium text-white cursor-pointer"
                   >
                     Delete
                   </button>

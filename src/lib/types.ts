@@ -40,6 +40,15 @@ export interface Deal {
   partner_name: string | null
   is_public: boolean
 
+  raise_target: number | null
+  raise_committed: number
+  purchase_price: number | null
+  sold_price: number | null
+  sold_date: string | null
+  lender_outcome: string | null
+  before_image_path: string | null
+  after_image_path: string | null
+
   created_by: string | null
   created_at: string
   updated_at: string

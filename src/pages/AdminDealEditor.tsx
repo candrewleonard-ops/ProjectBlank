@@ -9,6 +9,7 @@ import AdminTaskManager from '../components/admin/AdminTaskManager'
 import AdminMediaManager from '../components/admin/AdminMediaManager'
 import AdminDocumentManager from '../components/admin/AdminDocumentManager'
 import AdminInquiries from '../components/admin/AdminInquiries'
+import MoneySlider from '../components/admin/MoneySlider'
 
 interface FormState {
   title: string
@@ -33,6 +34,12 @@ interface FormState {
   budget_variance_note: string
   is_illiquid: boolean
   alert_reason: string
+  raise_target: string
+  raise_committed: string
+  purchase_price: string
+  sold_price: string
+  sold_date: string
+  lender_outcome: string
 }
 
 const EMPTY: FormState = {
@@ -58,6 +65,12 @@ const EMPTY: FormState = {
   budget_variance_note: '',
   is_illiquid: false,
   alert_reason: '',
+  raise_target: '',
+  raise_committed: '',
+  purchase_price: '',
+  sold_price: '',
+  sold_date: '',
+  lender_outcome: '',
 }
 
 function dealToForm(deal: Deal): FormState {
@@ -84,6 +97,12 @@ function dealToForm(deal: Deal): FormState {
     budget_variance_note: deal.budget_variance_note ?? '',
     is_illiquid: deal.is_illiquid,
     alert_reason: deal.alert_reason ?? '',
+    raise_target: deal.raise_target?.toString() ?? '',
+    raise_committed: deal.raise_committed?.toString() ?? '',
+    purchase_price: deal.purchase_price?.toString() ?? '',
+    sold_price: deal.sold_price?.toString() ?? '',
+    sold_date: deal.sold_date ?? '',
+    lender_outcome: deal.lender_outcome ?? '',
   }
 }
 
@@ -163,6 +182,12 @@ export default function AdminDealEditor() {
       budget_variance_note: form.budget_variance_note || null,
       is_illiquid: form.is_illiquid,
       alert_reason: form.is_illiquid ? form.alert_reason || null : null,
+      raise_target: toNumberOrNull(form.raise_target),
+      raise_committed: toNumberOrNull(form.raise_committed) ?? 0,
+      purchase_price: toNumberOrNull(form.purchase_price),
+      sold_price: toNumberOrNull(form.sold_price),
+      sold_date: form.sold_date || null,
+      lender_outcome: form.lender_outcome.trim() || null,
     }
 
     if (isNew) {
@@ -280,24 +305,31 @@ export default function AdminDealEditor() {
         <section className="rounded-xl border border-ink-700/60 bg-ink-900/40 p-4">
           <h2 className="mb-3 text-sm font-semibold text-white">Financing & rehab budget</h2>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <LabeledInput label="ARV ($)" type="number" value={form.arv} onChange={(v) => update('arv', v)} />
-            <LabeledInput
-              label="Lien, incl. rehab budget ($)"
-              type="number"
-              value={form.lien_amount}
-              onChange={(v) => update('lien_amount', v)}
+            <MoneySlider
+              label="ARV"
+              value={Number(form.arv) || 0}
+              onChange={(v) => update('arv', String(v))}
+              max={500000}
             />
-            <LabeledInput
-              label="Rehab budget ($)"
-              type="number"
-              value={form.rehab_budget}
-              onChange={(v) => update('rehab_budget', v)}
+            <MoneySlider
+              label="Lien, incl. rehab budget"
+              value={Number(form.lien_amount) || 0}
+              onChange={(v) => update('lien_amount', String(v))}
+              max={500000}
             />
-            <LabeledInput
-              label="Rehab spent to date ($)"
-              type="number"
-              value={form.rehab_spent}
-              onChange={(v) => update('rehab_spent', v)}
+            <MoneySlider
+              label="Rehab budget"
+              value={Number(form.rehab_budget) || 0}
+              onChange={(v) => update('rehab_budget', String(v))}
+              max={150000}
+            />
+            <MoneySlider
+              label="Rehab drawn to date"
+              value={Number(form.rehab_spent) || 0}
+              onChange={(v) => update('rehab_spent', String(v))}
+              max={150000}
+              compareTo={Number(form.rehab_budget) || null}
+              compareMode="spend"
             />
           </div>
           <div className="mt-3">
@@ -308,6 +340,67 @@ export default function AdminDealEditor() {
               value={form.budget_variance_note}
               onChange={(e) => update('budget_variance_note', e.target.value)}
               className="w-full rounded-lg border border-ink-600 bg-ink-800 px-3 py-2 text-sm text-white outline-none focus:border-brand-500"
+            />
+          </div>
+        </section>
+
+        <section className="rounded-xl border border-gold-500/25 bg-ink-900/40 p-4">
+          <h2 className="mb-1 text-sm font-semibold text-white">Open raise</h2>
+          <p className="mb-3 text-xs text-ink-500">
+            Set a target to show investors a funding progress bar. $0 hides it.
+          </p>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <MoneySlider
+              label="Raise target"
+              value={Number(form.raise_target) || 0}
+              onChange={(v) => update('raise_target', v === 0 ? '' : String(v))}
+              max={150000}
+              accent="gold"
+            />
+            <MoneySlider
+              label="Committed so far"
+              value={Number(form.raise_committed) || 0}
+              onChange={(v) => update('raise_committed', String(v))}
+              max={Math.max(Number(form.raise_target) || 0, 150000)}
+              compareTo={Number(form.raise_target) || null}
+              compareMode="raise"
+              accent="gold"
+            />
+          </div>
+        </section>
+
+        <section className="rounded-xl border border-ink-700/60 bg-ink-900/40 p-4">
+          <h2 className="mb-1 text-sm font-semibold text-white">Sale results (track record)</h2>
+          <p className="mb-3 text-xs text-ink-500">
+            Fill these in when the deal sells and set Status to Completed — it then appears on the
+            public Track Record page.
+          </p>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <MoneySlider
+              label="Purchase price"
+              value={Number(form.purchase_price) || 0}
+              onChange={(v) => update('purchase_price', v === 0 ? '' : String(v))}
+              max={500000}
+            />
+            <MoneySlider
+              label="Sold for"
+              value={Number(form.sold_price) || 0}
+              onChange={(v) => update('sold_price', v === 0 ? '' : String(v))}
+              max={500000}
+            />
+            <div>
+              <label className="mb-1 block text-xs font-medium text-ink-400">Sold date</label>
+              <input
+                type="date"
+                value={form.sold_date}
+                onChange={(e) => update('sold_date', e.target.value)}
+                className="w-full rounded-lg border border-ink-600 bg-ink-800 px-3 py-2 text-sm text-white outline-none focus:border-brand-500"
+              />
+            </div>
+            <LabeledInput
+              label="Lender outcome"
+              value={form.lender_outcome}
+              onChange={(v) => update('lender_outcome', v)}
             />
           </div>
         </section>
@@ -395,7 +488,10 @@ export default function AdminDealEditor() {
           <AdminMediaManager
             dealId={deal.id}
             coverImagePath={deal.cover_image_path}
+            beforeImagePath={deal.before_image_path}
+            afterImagePath={deal.after_image_path}
             onCoverChange={(path) => setDeal({ ...deal, cover_image_path: path })}
+            onBeforeAfterChange={(field, path) => setDeal({ ...deal, [field]: path })}
           />
           <AdminDocumentManager dealId={deal.id} />
           <AdminTaskManager dealId={deal.id} />

@@ -6,17 +6,21 @@ import { CONTACT_NAME, CONTACT_PHONE, CONTACT_PHONE_HREF, CONTACT_EMAIL } from '
 export default function InquiryModal({
   dealId,
   dealTitle,
+  amount,
   onClose,
 }: {
   dealId: string
   dealTitle: string
+  amount?: number | null
   onClose: () => void
 }) {
   const { user, profile } = useAuth()
   const [name, setName] = useState(profile?.full_name ?? '')
   const [email, setEmail] = useState(user?.email ?? '')
   const [phone, setPhone] = useState('')
-  const [message, setMessage] = useState('')
+  const [message, setMessage] = useState(
+    amount ? `I'm interested in partnering at $${amount.toLocaleString()} on this project.` : '',
+  )
   const [submitting, setSubmitting] = useState(false)
   const [sent, setSent] = useState(false)
   const [error, setError] = useState<string | null>(null)

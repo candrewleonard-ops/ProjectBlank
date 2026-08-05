@@ -23,6 +23,13 @@ export default function Layout() {
               Deals
             </NavLink>
 
+            <NavLink
+              to="/track-record"
+              className={({ isActive }) => `rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${isActive ? 'bg-ink-800 text-white' : 'text-ink-300 hover:text-white'}`}
+            >
+              Track Record
+            </NavLink>
+
             {isAdmin && (
               <NavLink to="/admin" className={({ isActive }) => `rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${isActive ? 'bg-ink-800 text-white' : 'text-ink-300 hover:text-white'}`}>
                 Admin
