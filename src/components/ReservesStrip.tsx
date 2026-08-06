@@ -1,20 +1,12 @@
 import type { Deal } from '../lib/types'
 import { formatCurrency } from '../lib/format'
-import { RESERVE_MONTHS, MONTHLY_PAYMENT_RATE, REHAB_RESERVE_RATE } from '../lib/site'
+import { REHAB_RESERVE_RATE, PAYMENTS_FUNDED_LABEL, PAYMENTS_FUNDED_NOTE } from '../lib/site'
 
 export default function ReservesStrip({ deal }: { deal: Deal }) {
-  const paymentReserve =
-    deal.lien_amount !== null
-      ? Math.round(deal.lien_amount * MONTHLY_PAYMENT_RATE * RESERVE_MONTHS)
-      : null
   const rehabReserve =
     deal.rehab_budget !== null ? Math.round(deal.rehab_budget * REHAB_RESERVE_RATE) : null
-  const total =
-    paymentReserve !== null || rehabReserve !== null
-      ? (paymentReserve ?? 0) + (rehabReserve ?? 0)
-      : null
 
-  if (total === null) return null
+  if (rehabReserve === null) return null
 
   return (
     <div className="rounded-xl border border-gold-500/25 bg-gold-500/5 px-4 py-3.5">
@@ -25,28 +17,30 @@ export default function ReservesStrip({ deal }: { deal: Deal }) {
           </span>
           <div>
             <p className="text-sm font-semibold text-white">
-              Cash reserves needed: <span className="text-gold-400">{formatCurrency(total)}</span>
+              Rehab cash reserves needed:{' '}
+              <span className="text-gold-400">{formatCurrency(rehabReserve)}</span>
             </p>
             <p className="text-xs text-ink-400">
-              Our reserve target on every deal — so payments and work never stall.
+              {Math.round(REHAB_RESERVE_RATE * 100)}% of the rehab budget held in cash so work never
+              stalls.
             </p>
           </div>
         </div>
+      </div>
 
-        <div className="flex gap-2 text-xs">
-          {paymentReserve !== null && (
-            <span className="rounded-lg bg-ink-900/60 px-3 py-1.5 text-ink-300">
-              Payment reserves ({RESERVE_MONTHS} mo)
-              <span className="ml-1.5 font-semibold text-white">{formatCurrency(paymentReserve)}</span>
-            </span>
-          )}
-          {rehabReserve !== null && (
-            <span className="rounded-lg bg-ink-900/60 px-3 py-1.5 text-ink-300">
-              Rehab reserves ({Math.round(REHAB_RESERVE_RATE * 100)}%)
-              <span className="ml-1.5 font-semibold text-white">{formatCurrency(rehabReserve)}</span>
-            </span>
-          )}
-        </div>
+      <div className="mt-3 flex items-start gap-2.5 border-t border-gold-500/15 pt-3">
+        <span
+          aria-hidden="true"
+          className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded bg-brand-500 text-[11px] font-bold text-ink-950"
+        >
+          ✓
+        </span>
+        <p className="text-sm text-ink-200">
+          <span className="font-semibold text-white">{PAYMENTS_FUNDED_LABEL}</span>
+          <span className="mt-0.5 block text-xs leading-relaxed text-ink-400">
+            {PAYMENTS_FUNDED_NOTE}
+          </span>
+        </p>
       </div>
     </div>
   )

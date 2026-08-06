@@ -6,6 +6,7 @@ import Spinner from '../components/Spinner'
 import PartnerPromo from '../components/PartnerPromo'
 import EmailCapture from '../components/EmailCapture'
 import ContactCta from '../components/ContactCta'
+import PortfolioRaiseBar from '../components/PortfolioRaiseBar'
 import { FACEBOOK_PAGE_URL, SELLING_COST_RATE, SITE_NAME } from '../lib/site'
 import { formatCompactCurrency, formatRelativeTime } from '../lib/format'
 
@@ -87,6 +88,7 @@ export default function Dashboard() {
   const [error, setError] = useState<string | null>(null)
   const [filter, setFilter] = useState<Filter>('all')
   const [sort, setSort] = useState<Sort>('newest')
+  const [raiseCommitted, setRaiseCommitted] = useState(0)
 
   const load = useCallback(async (initial: boolean) => {
     if (initial) setLoading(true)
@@ -108,6 +110,12 @@ export default function Dashboard() {
 
     const dealList = (dealRows ?? []) as Deal[]
     setDeals(dealList)
+
+    const { data: settings } = await supabase
+      .from('site_settings')
+      .select('raise_committed')
+      .maybeSingle()
+    if (settings) setRaiseCommitted(Number(settings.raise_committed) || 0)
 
     if (dealList.length > 0) {
       const { data: taskRows } = await supabase
@@ -318,6 +326,7 @@ export default function Dashboard() {
         </section>
       )}
 
+      <PortfolioRaiseBar committed={raiseCommitted} />
       <ContactCta />
       <EmailCapture />
     </div>

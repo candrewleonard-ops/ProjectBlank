@@ -266,6 +266,30 @@ create policy "deal_documents: visible read" on public.deal_documents
   for select to authenticated using (public.deal_is_visible(deal_id));
 
 -- ----------------------------------------------------------------------------
+-- site_settings — single row holding the portfolio-wide capital raise
+-- ----------------------------------------------------------------------------
+create table if not exists public.site_settings (
+  id boolean primary key default true,
+  raise_committed numeric not null default 0,
+  updated_at timestamptz not null default now(),
+  constraint site_settings_single_row check (id)
+);
+
+insert into public.site_settings (id, raise_committed)
+values (true, 0)
+on conflict (id) do nothing;
+
+alter table public.site_settings enable row level security;
+
+drop policy if exists "site_settings: public read" on public.site_settings;
+create policy "site_settings: public read" on public.site_settings
+  for select using (true);
+
+drop policy if exists "site_settings: admin write" on public.site_settings;
+create policy "site_settings: admin write" on public.site_settings
+  for all to authenticated using (public.is_admin()) with check (public.is_admin());
+
+-- ----------------------------------------------------------------------------
 -- subscribers — email-capture popup list
 -- ----------------------------------------------------------------------------
 create table if not exists public.subscribers (

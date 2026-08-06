@@ -5,6 +5,9 @@ import type { Deal, DealInquiry } from '../lib/types'
 import { getMediaUrl } from '../lib/storage'
 import { formatDate } from '../lib/format'
 import Spinner from '../components/Spinner'
+import MoneySlider from '../components/admin/MoneySlider'
+import { RAISE_TOTAL, RAISE_TIERS } from '../lib/site'
+import { formatCurrency } from '../lib/format'
 
 type InquiryWithDeal = DealInquiry & { deals: { title: string; slug: string } | null }
 
@@ -13,6 +16,9 @@ export default function AdminDashboard() {
   const [inquiries, setInquiries] = useState<InquiryWithDeal[]>([])
   const [inquiriesError, setInquiriesError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  const [raise, setRaise] = useState(0)
+  const [raiseSaved, setRaiseSaved] = useState<number | null>(null)
+  const [raiseError, setRaiseError] = useState<string | null>(null)
 
   useEffect(() => {
     load()
@@ -29,12 +35,37 @@ export default function AdminDashboard() {
         .limit(15),
     ])
     setDeals((data ?? []) as Deal[])
+
+    const settingsResult = await supabase
+      .from('site_settings')
+      .select('raise_committed')
+      .maybeSingle()
+    if (settingsResult.error) {
+      setRaiseError(settingsResult.error.message)
+    } else if (settingsResult.data) {
+      setRaise(Number(settingsResult.data.raise_committed) || 0)
+    }
+
     if (inquiriesResult.error) {
       setInquiriesError(inquiriesResult.error.message)
     } else {
       setInquiries((inquiriesResult.data ?? []) as InquiryWithDeal[])
     }
     setLoading(false)
+  }
+
+  async function saveRaise() {
+    setRaiseError(null)
+    const { error } = await supabase
+      .from('site_settings')
+      .update({ raise_committed: raise, updated_at: new Date().toISOString() })
+      .eq('id', true)
+    if (error) {
+      setRaiseError(error.message)
+      return
+    }
+    setRaiseSaved(Date.now())
+    setTimeout(() => setRaiseSaved(null), 2500)
   }
 
   async function removeInquiry(inquiry: InquiryWithDeal) {
@@ -67,6 +98,61 @@ export default function AdminDashboard() {
           </Link>
         </div>
       </div>
+
+      <section className="mb-8 rounded-xl border border-gold-500/30 bg-ink-900/40 p-4">
+        <h2 className="mb-1 flex items-center gap-2 text-sm font-semibold text-white">
+          💰 Capital raised (portfolio bar)
+          {raiseSaved && <span className="text-xs font-medium text-brand-400">✓ Saved</span>}
+        </h2>
+        <p className="mb-3 text-xs text-ink-500">
+          Drag to what you've raised — the milestone bar at the bottom of the deals page fills to
+          match.
+        </p>
+
+        {raiseError ? (
+          <div className="rounded-lg border border-gold-500/30 bg-gold-500/5 px-3.5 py-3 text-sm text-ink-200">
+            Not set up yet — run{' '}
+            <code className="rounded bg-ink-800 px-1.5 py-0.5 text-xs text-ink-100">
+              supabase/upgrade-2026-08d.sql
+            </code>{' '}
+            once in the Supabase SQL Editor. ({raiseError})
+          </div>
+        ) : (
+          <>
+            <MoneySlider
+              label={`Raised of ${formatCurrency(RAISE_TOTAL)}`}
+              value={raise}
+              onChange={setRaise}
+              max={RAISE_TOTAL}
+              step={500}
+              compareTo={RAISE_TOTAL}
+              compareMode="raise"
+              accent="gold"
+            />
+            <div className="mt-2.5 flex flex-wrap items-center gap-2">
+              {RAISE_TIERS.map((t) => (
+                <span
+                  key={t.amount}
+                  className={`rounded-full px-2 py-0.5 text-xs ${
+                    raise >= t.amount
+                      ? 'bg-gold-500/20 font-medium text-gold-300'
+                      : 'bg-ink-800 text-ink-400'
+                  }`}
+                >
+                  {raise >= t.amount ? '✓ ' : ''}
+                  {t.label} · {formatCurrency(t.amount)}
+                </span>
+              ))}
+            </div>
+            <button
+              onClick={saveRaise}
+              className="mt-3 rounded-lg bg-gradient-to-r from-brand-500 to-brand-400 px-4 py-2 text-sm font-semibold text-ink-950 transition-transform hover:scale-[1.02] cursor-pointer"
+            >
+              Save raise
+            </button>
+          </>
+        )}
+      </section>
 
       <section className="mb-8">
         <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-white">

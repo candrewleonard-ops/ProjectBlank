@@ -22,12 +22,24 @@ export const ADDRESS_ON_REQUEST = 'Address available upon request'
 // ARV. Subtracted from ARV - lien to get "projected cash at close".
 export const SELLING_COST_RATE = 0.085
 
-// Cash reserves held on every deal: RESERVE_MONTHS months of payments at
-// MONTHLY_PAYMENT_RATE of the lien per month, plus REHAB_RESERVE_RATE of the
-// rehab budget on hand in cash.
-export const RESERVE_MONTHS = 3
-export const MONTHLY_PAYMENT_RATE = 0.01
+// Rehab cash reserve held per deal, as a share of the rehab budget.
 export const REHAB_RESERVE_RATE = 0.15
+
+// Interest-only payments are covered in-house, so investors just see that
+// they're funded rather than a dollar figure.
+export const PAYMENTS_FUNDED_LABEL = '3 months of monthly payments'
+export const PAYMENTS_FUNDED_NOTE =
+  'Property Interest Only Loan Payments Funded by Reinnovation Homes & ZGH Holdings LLC, each payment'
+
+// The open portfolio raise shown at the bottom of the deals page. Each tier
+// unlocks the rehab reserve for another property, in order.
+export const RAISE_TOTAL = 25000
+export const RAISE_TIERS = [
+  { amount: 6500, label: 'Lima, OH', note: 'Operating' },
+  { amount: 11500, label: 'Newport News, VA', note: 'Starts rehab' },
+  { amount: 18000, label: 'Zanesville, OH', note: 'Starts rehab' },
+  { amount: 25000, label: 'Columbus, IN', note: 'Fully running' },
+]
 
 // The exact street address is never shown publicly. Admins enter the full
 // address (e.g. 123 Main St, Indianapolis, IN 46201) and visitors only ever
