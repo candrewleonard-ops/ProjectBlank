@@ -22,6 +22,7 @@ import FundingBar from '../components/FundingBar'
 import PayoffCalculator from '../components/PayoffCalculator'
 import BeforeAfterSlider from '../components/BeforeAfterSlider'
 import QuickEditPanel from '../components/admin/QuickEditPanel'
+import { logLeadEvent } from '../lib/leads'
 
 type Tab = 'overview' | 'media' | 'info' | 'invoices'
 
@@ -66,6 +67,7 @@ export default function DealDetail() {
         setDeal(dealRow as Deal)
         setTasks((taskRows ?? []) as DealTask[])
         setLoading(false)
+        logLeadEvent('deal_view', { dealId: dealRow.id, detail: dealRow.title })
       }
     }
     load()

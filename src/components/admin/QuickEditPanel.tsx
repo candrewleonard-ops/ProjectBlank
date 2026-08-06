@@ -29,7 +29,8 @@ export default function QuickEditPanel({
     draft.current_focus !== deal.current_focus ||
     draft.status !== deal.status ||
     draft.is_illiquid !== deal.is_illiquid ||
-    draft.alert_reason !== deal.alert_reason
+    draft.alert_reason !== deal.alert_reason ||
+    draft.is_public !== deal.is_public
 
   function set<K extends keyof Deal>(key: K, value: Deal[K]) {
     setDraft((d) => ({ ...d, [key]: value }))
@@ -49,6 +50,7 @@ export default function QuickEditPanel({
         lien_amount: draft.lien_amount,
         current_focus: draft.current_focus?.trim() || null,
         status: draft.status,
+        is_public: draft.is_public,
         is_illiquid: draft.is_illiquid,
         alert_reason: draft.is_illiquid ? draft.alert_reason?.trim() || null : null,
       })
@@ -176,6 +178,24 @@ export default function QuickEditPanel({
               </select>
             </div>
           </div>
+
+          <label
+            className={`mt-3 flex cursor-pointer items-center gap-2.5 rounded-lg border px-3 py-2.5 text-sm transition-colors ${
+              draft.is_public
+                ? 'border-brand-500/40 bg-brand-500/10 text-ink-100'
+                : 'border-ink-600 bg-ink-800/60 text-ink-300'
+            }`}
+          >
+            <input
+              type="checkbox"
+              checked={draft.is_public}
+              onChange={(e) => set('is_public', e.target.checked)}
+              className="h-4 w-4 accent-brand-500"
+            />
+            <span>
+              {draft.is_public ? '🌐 Public — everyone can see this deal' : '🔒 Private — only granted emails'}
+            </span>
+          </label>
 
           <div className="mt-3 rounded-lg border border-alert-500/20 bg-alert-500/5 p-3">
             <label className="flex items-center gap-2 text-sm text-ink-200">

@@ -1,5 +1,7 @@
 import { formatCurrency } from '../lib/format'
 import { RAISE_TOTAL, RAISE_TIERS } from '../lib/site'
+import { PARTNERSHIP_INTENT_EVENT } from './ContactCta'
+import { logLeadEvent } from '../lib/leads'
 
 // Portfolio-wide raise, docked at the bottom of the deals page. Each tier
 // unlocks another property's rehab reserve as capital comes in.
@@ -113,7 +115,15 @@ export default function PortfolioRaiseBar({ committed }: { committed: number }) 
             </p>
           )}
           <button
-            onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+            onClick={() => {
+              window.dispatchEvent(new Event(PARTNERSHIP_INTENT_EVENT))
+              logLeadEvent('funding_request', {
+                detail: nextTier
+                  ? `Clicked Fund a milestone (next: ${nextTier.label})`
+                  : 'Clicked Fund a milestone',
+              })
+              document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })
+            }}
             className="mt-4 rounded-lg bg-gradient-to-r from-gold-500 to-gold-400 px-5 py-2.5 text-sm font-semibold text-ink-950 shadow-lg shadow-gold-500/20 transition-transform hover:scale-[1.02] active:scale-[0.99] cursor-pointer"
           >
             Fund a milestone

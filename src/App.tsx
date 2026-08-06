@@ -12,6 +12,7 @@ import AdminDealEditor from './pages/AdminDealEditor'
 import AdminAudience from './pages/AdminAudience'
 import ResetPassword from './pages/ResetPassword'
 import TrackRecord from './pages/TrackRecord'
+import AdminLeads from './pages/AdminLeads'
 
 function App() {
   if (!isSupabaseConfigured) return <ConfigNotice />
@@ -34,6 +35,14 @@ function App() {
               element={
                 <AdminRoute>
                   <AdminDashboard />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/admin/leads"
+              element={
+                <AdminRoute>
+                  <AdminLeads />
                 </AdminRoute>
               }
             />

@@ -42,7 +42,7 @@ export default function TrackRecord() {
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
       <div className="animate-fade-up mb-8 text-center">
         <p className="text-xs font-semibold uppercase tracking-[0.28em] text-ink-500">
-          {SITE_NAME} · Track Record
+          {SITE_NAME} · Rehab Work
         </p>
         <h1 className="mx-auto mt-3 max-w-2xl text-3xl font-bold tracking-tight text-white sm:text-4xl">
           Projects we've <span className="text-gradient-animated">finished and sold</span>

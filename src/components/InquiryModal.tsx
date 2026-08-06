@@ -2,6 +2,9 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 import { CONTACT_NAME, CONTACT_PHONE, CONTACT_PHONE_HREF, CONTACT_EMAIL } from '../lib/site'
+import { getLeadEmail, setLeadEmail, upsertLead, logLeadEvent } from '../lib/leads'
+
+const AGE_RANGES = ['18-25', '25-40', '40-60', '60+']
 
 export default function InquiryModal({
   dealId,
@@ -16,7 +19,8 @@ export default function InquiryModal({
 }) {
   const { user, profile } = useAuth()
   const [name, setName] = useState(profile?.full_name ?? '')
-  const [email, setEmail] = useState(user?.email ?? '')
+  const [email, setEmail] = useState(user?.email ?? getLeadEmail() ?? '')
+  const [ageRange, setAgeRange] = useState('')
   const [phone, setPhone] = useState('')
   const [message, setMessage] = useState(
     amount ? `I'm interested in partnering at $${amount.toLocaleString()} on this project.` : '',
@@ -47,8 +51,26 @@ export default function InquiryModal({
       email: email.trim() || null,
       phone: phone.trim() || null,
       message: message.trim() || null,
+      age_range: ageRange || null,
       user_id: user?.id ?? null,
     })
+
+    // Roll this into the lead record and its activity trail.
+    const leadEmail = (email.trim() || getLeadEmail() || '').toLowerCase()
+    if (leadEmail) {
+      setLeadEmail(leadEmail)
+      await upsertLead(leadEmail, {
+        name: name.trim(),
+        phone: phone.trim(),
+        age_range: ageRange,
+        wants_partnership: true,
+      })
+      await logLeadEvent('funding_request', {
+        dealId,
+        amount: amount ?? null,
+        detail: message.trim() || `Inquiry on ${dealTitle}`,
+      })
+    }
     setSubmitting(false)
     if (insertError) {
       // Don't surface raw database errors to investors — give them a way to
@@ -142,6 +164,24 @@ export default function InquiryModal({
                       placeholder={CONTACT_PHONE}
                     />
                   </div>
+                </div>
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-ink-400">Age range</label>
+                  <select
+                    required
+                    value={ageRange}
+                    onChange={(e) => setAgeRange(e.target.value)}
+                    className="w-full rounded-lg border border-ink-600 bg-ink-800 px-3 py-2 text-sm text-white outline-none focus:border-brand-500"
+                  >
+                    <option value="" disabled>
+                      Select your age range
+                    </option>
+                    {AGE_RANGES.map((r) => (
+                      <option key={r} value={r}>
+                        {r}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <label className="mb-1 block text-xs font-medium text-ink-400">

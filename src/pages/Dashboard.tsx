@@ -326,8 +326,8 @@ export default function Dashboard() {
         </section>
       )}
 
-      <PortfolioRaiseBar committed={raiseCommitted} />
       <ContactCta />
+      <PortfolioRaiseBar committed={raiseCommitted} />
       <EmailCapture />
     </div>
   )

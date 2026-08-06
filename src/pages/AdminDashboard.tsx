@@ -85,6 +85,12 @@ export default function AdminDashboard() {
         </div>
         <div className="flex shrink-0 gap-2">
           <Link
+            to="/admin/leads"
+            className="rounded-lg border border-ink-600 px-4 py-2 text-sm font-medium text-ink-200 transition-colors hover:border-ink-400 hover:text-white"
+          >
+            Leads
+          </Link>
+          <Link
             to="/admin/audience"
             className="rounded-lg border border-ink-600 px-4 py-2 text-sm font-medium text-ink-200 transition-colors hover:border-ink-400 hover:text-white"
           >

@@ -2,6 +2,7 @@ import { Link, NavLink, Outlet, useNavigate, useLocation } from 'react-router-do
 import { useAuth } from '../context/AuthContext'
 import { SITE_NAME, CONTACT_PHONE, CONTACT_PHONE_HREF, FACEBOOK_PAGE_URL, FACEBOOK_CARSON_URL } from '../lib/site'
 import Logo from './Logo'
+import EmailGate from './EmailGate'
 
 export default function Layout() {
   const { user, profile, isAdmin, signOut } = useAuth()
@@ -54,7 +55,7 @@ export default function Layout() {
                 }`
               }
             >
-              Track Record
+              Rehab Work
             </NavLink>
 
             {isAdmin && (
@@ -89,6 +90,8 @@ export default function Layout() {
           </nav>
         </div>
       </header>
+
+      <EmailGate />
 
       <main className="flex-1">
         <Outlet />
