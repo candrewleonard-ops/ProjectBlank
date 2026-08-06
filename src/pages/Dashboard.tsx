@@ -4,8 +4,8 @@ import type { Deal, TaskStatus } from '../lib/types'
 import DealCard from '../components/DealCard'
 import Spinner from '../components/Spinner'
 import PartnerPromo from '../components/PartnerPromo'
-import EmailCapture from '../components/EmailCapture'
 import ContactCta from '../components/ContactCta'
+import StickyRaiseBar from '../components/StickyRaiseBar'
 import PortfolioRaiseBar from '../components/PortfolioRaiseBar'
 import { FACEBOOK_PAGE_URL, SELLING_COST_RATE, SITE_NAME } from '../lib/site'
 import { formatCompactCurrency, formatRelativeTime } from '../lib/format'
@@ -184,7 +184,7 @@ export default function Dashboard() {
   const shownRegular = applyFilter(regular)
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+    <div className="mx-auto max-w-6xl px-4 py-8 pb-28 sm:px-6">
       <PartnerPromo />
 
       <div className="animate-fade-up mb-8 text-center">
@@ -328,7 +328,7 @@ export default function Dashboard() {
 
       <ContactCta />
       <PortfolioRaiseBar committed={raiseCommitted} />
-      <EmailCapture />
+      <StickyRaiseBar committed={raiseCommitted} />
     </div>
   )
 }

@@ -4,7 +4,6 @@ import { getMediaUrl } from '../lib/storage'
 import { publicLocation, SELLING_COST_RATE } from '../lib/site'
 import { formatCompactCurrency, formatRelativeTime } from '../lib/format'
 import { LogoMark } from './Logo'
-import FundingBar from './FundingBar'
 
 interface TaskCounts {
   todo: number
@@ -33,7 +32,6 @@ export default function DealCard({
       ? Math.round((deal.lien_amount / deal.arv) * 100)
       : null
   const isNew = Date.now() - new Date(deal.created_at).getTime() < 7 * 24 * 60 * 60 * 1000
-  const raising = deal.raise_target !== null && deal.raise_target > 0 && deal.status === 'active'
 
   return (
     <Link
@@ -83,8 +81,6 @@ export default function DealCard({
           </div>
           {location && <p className="mt-0.5 text-sm text-ink-400">{location}</p>}
         </div>
-
-        {raising && <FundingBar deal={deal} compact />}
 
         {(total > 0 || deal.current_focus) && (
           <div>
