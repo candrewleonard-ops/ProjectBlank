@@ -17,6 +17,7 @@ import FinancialStrip from '../components/FinancialStrip'
 import ReservesStrip from '../components/ReservesStrip'
 import InquiryModal from '../components/InquiryModal'
 import AssetShowcase from '../components/AssetShowcase'
+import ContactCta from '../components/ContactCta'
 import FundingBar from '../components/FundingBar'
 import PayoffCalculator from '../components/PayoffCalculator'
 import BeforeAfterSlider from '../components/BeforeAfterSlider'
@@ -142,8 +143,8 @@ export default function DealDetail() {
 
       {isAdmin && <QuickEditPanel deal={deal} onSaved={setDeal} />}
 
-      <div className="mb-6 grid grid-cols-1 gap-5 sm:grid-cols-[220px_1fr]">
-        <div className="aspect-[4/3] w-full overflow-hidden rounded-xl border border-ink-700/60 bg-ink-800 sm:aspect-square">
+      <div className="mb-6 grid grid-cols-[100px_1fr] gap-4 sm:grid-cols-[220px_1fr] sm:gap-5">
+        <div className="aspect-square w-full overflow-hidden rounded-xl border border-ink-700/60 bg-ink-800">
           {deal.cover_image_path ? (
             <img
               src={getMediaUrl(deal.cover_image_path)}
@@ -290,6 +291,7 @@ export default function DealDetail() {
       </div>
 
       <AssetShowcase />
+      <ContactCta />
     </div>
   )
 }

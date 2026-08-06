@@ -1,13 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { getMediaUrl } from '../lib/storage'
-import {
-  CONTACT_PHONE,
-  CONTACT_PHONE_HREF,
-  FACEBOOK_CARSON_URL,
-  PARTNER_MINIMUM,
-  SITE_NAME,
-} from '../lib/site'
+import { FACEBOOK_CARSON_URL, PARTNER_MINIMUM, SITE_NAME } from '../lib/site'
 
 const SLIDES = [
   {
@@ -86,7 +80,7 @@ export default function AssetShowcase() {
                 <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-400">
                   {s.kicker}
                 </p>
-                <h2 className="mx-auto mt-2 max-w-xl text-2xl font-semibold tracking-tight text-white">
+                <h2 className="mx-auto mt-2 max-w-xl text-xl font-semibold tracking-tight text-white sm:text-2xl">
                   {s.title}
                 </h2>
                 <p className="mx-auto mt-2 max-w-lg text-sm leading-relaxed text-ink-400">{s.text}</p>
@@ -109,12 +103,12 @@ export default function AssetShowcase() {
         </div>
 
         <div className="mt-5 px-6 text-center">
-          <a
-            href={CONTACT_PHONE_HREF}
-            className="inline-block rounded-lg bg-gradient-to-r from-brand-500 to-brand-400 px-5 py-2.5 text-sm font-semibold text-ink-950 shadow-lg shadow-brand-500/20 transition-transform hover:scale-[1.02] active:scale-[0.99]"
+          <button
+            onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+            className="inline-block rounded-lg bg-gradient-to-r from-brand-500 to-brand-400 px-5 py-2.5 text-sm font-semibold text-ink-950 shadow-lg shadow-brand-500/20 transition-transform hover:scale-[1.02] active:scale-[0.99] cursor-pointer"
           >
-            Talk deals — call {CONTACT_PHONE}
-          </a>
+            Talk deals — contact us
+          </button>
           <p className="mt-3 text-sm text-ink-400">
             💬 DM any of our team members for information —{' '}
             <a
@@ -141,7 +135,7 @@ export default function AssetShowcase() {
                 alt=""
                 loading="lazy"
                 decoding="async"
-                className="h-28 w-44 shrink-0 rounded-lg border border-ink-700/60 object-cover sm:h-32 sm:w-52"
+                className="h-20 w-32 shrink-0 rounded-lg border border-ink-700/60 object-cover sm:h-32 sm:w-52"
               />
             ))}
           </div>

@@ -5,7 +5,8 @@ import DealCard from '../components/DealCard'
 import Spinner from '../components/Spinner'
 import PartnerPromo from '../components/PartnerPromo'
 import EmailCapture from '../components/EmailCapture'
-import { CONTACT_PHONE, CONTACT_PHONE_HREF, FACEBOOK_PAGE_URL, SELLING_COST_RATE, SITE_NAME } from '../lib/site'
+import ContactCta from '../components/ContactCta'
+import { FACEBOOK_PAGE_URL, SELLING_COST_RATE, SITE_NAME } from '../lib/site'
 import { formatCompactCurrency, formatRelativeTime } from '../lib/format'
 
 const REFRESH_MS = 60_000
@@ -182,7 +183,7 @@ export default function Dashboard() {
         <p className="text-xs font-semibold uppercase tracking-[0.28em] text-ink-500">
           {SITE_NAME} · Investor Portal
         </p>
-        <h1 className="mx-auto mt-3 max-w-3xl text-3xl font-bold tracking-tight text-white sm:text-4xl">
+        <h1 className="mx-auto mt-3 max-w-3xl text-2xl font-bold tracking-tight text-white sm:text-4xl">
           ZGH Holdings Flip Portfolio{' '}
           <span className="block text-xl font-semibold text-ink-300 sm:mt-1 sm:text-2xl">
             as of {asOf} — <span className="text-gradient-animated">Updated Live</span>
@@ -199,13 +200,13 @@ export default function Dashboard() {
           </p>
         )}
 
-        <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
-          <a
-            href={CONTACT_PHONE_HREF}
-            className="rounded-lg bg-gradient-to-r from-brand-500 to-brand-400 px-5 py-2.5 text-sm font-semibold text-ink-950 shadow-lg shadow-brand-500/25 transition-transform hover:scale-[1.03] active:scale-[0.99]"
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-2.5">
+          <button
+            onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+            className="rounded-lg bg-gradient-to-r from-brand-500 to-brand-400 px-5 py-2.5 text-sm font-semibold text-ink-950 shadow-lg shadow-brand-500/25 transition-transform hover:scale-[1.03] active:scale-[0.99] cursor-pointer"
           >
-            Partner with us — {CONTACT_PHONE}
-          </a>
+            Partner with us
+          </button>
           <a
             href={FACEBOOK_PAGE_URL}
             target="_blank"
@@ -317,6 +318,7 @@ export default function Dashboard() {
         </section>
       )}
 
+      <ContactCta />
       <EmailCapture />
     </div>
   )

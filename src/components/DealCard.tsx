@@ -40,7 +40,7 @@ export default function DealCard({
       to={`/deals/${deal.slug}`}
       className="card-shine group relative flex h-full flex-col overflow-hidden rounded-2xl border border-ink-700/60 bg-ink-900/50 transition-all duration-300 hover:-translate-y-1 hover:border-brand-500/40 hover:shadow-xl hover:shadow-brand-500/10"
     >
-      <div className="relative aspect-[16/10] w-full overflow-hidden bg-ink-800">
+      <div className="relative aspect-[2/1] w-full overflow-hidden bg-ink-800 sm:aspect-[16/10]">
         {deal.cover_image_path ? (
           <img
             src={getMediaUrl(deal.cover_image_path)}

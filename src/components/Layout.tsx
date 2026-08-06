@@ -1,10 +1,21 @@
-import { Link, NavLink, Outlet } from 'react-router-dom'
+import { Link, NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { SITE_NAME, CONTACT_PHONE, CONTACT_PHONE_HREF, FACEBOOK_PAGE_URL, FACEBOOK_CARSON_URL } from '../lib/site'
 import Logo from './Logo'
 
 export default function Layout() {
   const { user, profile, isAdmin, signOut } = useAuth()
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  // "Contact us" always lands on the signup CTA, from any page.
+  function goToContact() {
+    if (location.pathname !== '/') {
+      navigate('/#contact')
+      return
+    }
+    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })
+  }
 
   return (
     <div className="relative min-h-screen flex flex-col">
@@ -13,61 +24,67 @@ export default function Layout() {
         className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[420px] bg-[radial-gradient(60%_100%_at_50%_0%,rgba(14,165,233,0.07),transparent)]"
       />
       <header className="sticky top-0 z-30 border-b border-ink-700/60 bg-ink-950/85 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
-          <Link to="/" aria-label={SITE_NAME} className="group transition-opacity hover:opacity-85">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-3 py-2.5 sm:px-6 sm:py-3">
+          <Link
+            to="/"
+            aria-label={SITE_NAME}
+            className="group shrink-0 transition-opacity hover:opacity-85"
+          >
             <Logo />
           </Link>
 
-          <nav className="flex items-center gap-1 sm:gap-2">
-            <NavLink to="/" end className={({ isActive }) => `rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${isActive ? 'bg-ink-800 text-white' : 'text-ink-300 hover:text-white'}`}>
+          <nav className="flex shrink-0 items-center gap-0.5 sm:gap-1.5">
+            <NavLink
+              to="/"
+              end
+              className={({ isActive }) =>
+                `rounded-md px-2 py-1.5 text-[13px] font-medium transition-colors sm:px-3 sm:text-sm ${
+                  isActive ? 'bg-ink-800 text-white' : 'text-ink-300 hover:text-white'
+                }`
+              }
+            >
               Deals
             </NavLink>
 
             <NavLink
               to="/track-record"
-              className={({ isActive }) => `rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${isActive ? 'bg-ink-800 text-white' : 'text-ink-300 hover:text-white'}`}
+              className={({ isActive }) =>
+                `whitespace-nowrap rounded-md px-2 py-1.5 text-[13px] font-medium transition-colors sm:px-3 sm:text-sm ${
+                  isActive ? 'bg-ink-800 text-white' : 'text-ink-300 hover:text-white'
+                }`
+              }
             >
               Track Record
             </NavLink>
 
             {isAdmin && (
-              <NavLink to="/admin" className={({ isActive }) => `rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${isActive ? 'bg-ink-800 text-white' : 'text-ink-300 hover:text-white'}`}>
+              <NavLink
+                to="/admin"
+                className={({ isActive }) =>
+                  `rounded-md px-2 py-1.5 text-[13px] font-medium transition-colors sm:px-3 sm:text-sm ${
+                    isActive ? 'bg-ink-800 text-white' : 'text-ink-300 hover:text-white'
+                  }`
+                }
+              >
                 Admin
               </NavLink>
             )}
 
-            {user ? (
-              <>
-                <div className="ml-2 hidden items-center gap-2 pl-2 text-sm text-ink-400 sm:flex">
-                  <span className="max-w-[160px] truncate">{profile?.full_name || user.email}</span>
-                  {isAdmin && (
-                    <span className="rounded-full bg-gold-500/15 px-2 py-0.5 text-xs font-medium text-gold-400">
-                      Admin
-                    </span>
-                  )}
-                </div>
-                <button
-                  onClick={() => signOut()}
-                  className="ml-1 rounded-md border border-ink-600 px-3 py-1.5 text-sm font-medium text-ink-300 transition-colors hover:border-ink-400 hover:text-white cursor-pointer"
-                >
-                  Sign out
-                </button>
-              </>
-            ) : (
-              <>
-                <NavLink
-                  to="/login"
-                  className="rounded-md px-3 py-1.5 text-sm font-medium text-ink-300 transition-colors hover:text-white"
-                >
-                  Sign in
-                </NavLink>
-                <a
-                  href={CONTACT_PHONE_HREF}
-                  className="ml-1 rounded-md bg-brand-500 px-3 py-1.5 text-sm font-semibold text-ink-950 transition-colors hover:bg-brand-400"
-                >
-                  Call {CONTACT_PHONE}
-                </a>
-              </>
+            <button
+              onClick={goToContact}
+              className="whitespace-nowrap rounded-md bg-brand-500 px-2.5 py-1.5 text-[13px] font-semibold text-ink-950 transition-colors hover:bg-brand-400 sm:px-3.5 sm:text-sm cursor-pointer"
+            >
+              Contact us
+            </button>
+
+            {user && (
+              <button
+                onClick={() => signOut()}
+                title={profile?.full_name || user.email || 'Sign out'}
+                className="ml-0.5 rounded-md border border-ink-600 px-2 py-1.5 text-[13px] font-medium text-ink-300 transition-colors hover:border-ink-400 hover:text-white sm:px-3 sm:text-sm cursor-pointer"
+              >
+                Sign out
+              </button>
             )}
           </nav>
         </div>

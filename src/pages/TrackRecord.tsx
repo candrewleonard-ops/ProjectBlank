@@ -7,6 +7,7 @@ import { publicLocation, CONTACT_PHONE, CONTACT_PHONE_HREF, SITE_NAME } from '..
 import { getMediaUrl } from '../lib/storage'
 import BeforeAfterSlider from '../components/BeforeAfterSlider'
 import Spinner from '../components/Spinner'
+import ContactCta from '../components/ContactCta'
 
 export default function TrackRecord() {
   const [deals, setDeals] = useState<Deal[]>([])
@@ -171,19 +172,7 @@ export default function TrackRecord() {
         </>
       )}
 
-      <div className="mt-10 rounded-2xl border border-ink-700/60 bg-gradient-to-b from-ink-900/80 to-ink-950 px-6 py-8 text-center">
-        <h2 className="text-xl font-semibold text-white">Want to be on the next one?</h2>
-        <p className="mx-auto mt-2 max-w-md text-sm text-ink-400">
-          Second-position liens, deals bought below 70% LTARV, and a portfolio you can watch move in
-          real time.
-        </p>
-        <a
-          href={CONTACT_PHONE_HREF}
-          className="mt-5 inline-block rounded-lg bg-gradient-to-r from-brand-500 to-brand-400 px-5 py-2.5 text-sm font-semibold text-ink-950 shadow-lg shadow-brand-500/20 transition-transform hover:scale-[1.02]"
-        >
-          Talk deals — call {CONTACT_PHONE}
-        </a>
-      </div>
+      <ContactCta />
     </div>
   )
 }
