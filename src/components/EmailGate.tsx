@@ -67,8 +67,8 @@ export default function EmailGate() {
             See the {SITE_NAME} portfolio
           </h2>
           <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-ink-400">
-            Enter your email to view live deals, budgets, and photos. No password, no account to
-            create — we just like knowing who's following the projects.
+            Enter your email to view live deals, budgets, and photos. No password, instantly creates
+            a free base account to browse and view our remodeling project investments.
           </p>
 
           <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-3">

@@ -85,6 +85,12 @@ export default function AdminDashboard() {
         </div>
         <div className="flex shrink-0 gap-2">
           <Link
+            to="/track-record"
+            className="rounded-lg border border-gold-500/40 px-4 py-2 text-sm font-medium text-gold-400 transition-colors hover:bg-gold-500/10"
+          >
+            Rehab Work
+          </Link>
+          <Link
             to="/admin/leads"
             className="rounded-lg border border-ink-600 px-4 py-2 text-sm font-medium text-ink-200 transition-colors hover:border-ink-400 hover:text-white"
           >

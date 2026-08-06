@@ -8,8 +8,12 @@ import { getMediaUrl } from '../lib/storage'
 import BeforeAfterSlider from '../components/BeforeAfterSlider'
 import Spinner from '../components/Spinner'
 import ContactCta from '../components/ContactCta'
+import { useAuth } from '../context/AuthContext'
+import AddRehabPanel from '../components/admin/AddRehabPanel'
+import RehabQuickEdit from '../components/admin/RehabQuickEdit'
 
 export default function TrackRecord() {
+  const { isAdmin } = useAuth()
   const [deals, setDeals] = useState<Deal[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -52,6 +56,10 @@ export default function TrackRecord() {
           have been paid in full on every project to date.
         </p>
       </div>
+
+      {isAdmin && (
+        <AddRehabPanel onCreated={(d) => setDeals((list) => [d, ...list])} />
+      )}
 
       {deals.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-ink-700 px-6 py-16 text-center">
@@ -165,6 +173,15 @@ export default function TrackRecord() {
                       </p>
                     )}
                   </div>
+                  {isAdmin && (
+                    <RehabQuickEdit
+                      deal={deal}
+                      onSaved={(saved) =>
+                        setDeals((list) => list.map((d) => (d.id === saved.id ? saved : d)))
+                      }
+                      onRemoved={(id) => setDeals((list) => list.filter((d) => d.id !== id))}
+                    />
+                  )}
                 </article>
               )
             })}
