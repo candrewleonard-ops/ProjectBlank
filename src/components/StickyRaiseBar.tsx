@@ -44,14 +44,15 @@ export default function StickyRaiseBar({ committed }: { committed: number }) {
         ))}
       </div>
 
-      <div className="mx-auto flex max-w-6xl items-center gap-3 px-3 py-2.5 sm:px-6">
+      {/* Roomier on desktop; stays compact on phones. */}
+      <div className="mx-auto flex max-w-6xl items-center gap-3 px-3 py-2.5 sm:gap-5 sm:px-6 sm:py-[1.6rem]">
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-semibold text-white">
+          <p className="truncate text-sm font-semibold text-white sm:text-lg">
             <span className="text-gold-400">{formatCompactCurrency(raised)}</span> of{' '}
             {formatCompactCurrency(RAISE_TOTAL)} raised
             <span className="hidden text-ink-400 sm:inline"> · {Math.round(pct)}%</span>
           </p>
-          <p className="truncate text-xs text-ink-400">
+          <p className="truncate text-xs text-ink-400 sm:mt-1 sm:text-sm">
             {nextTier
               ? `${formatCurrency(nextTier.amount - raised)} more starts ${nextTier.label}`
               : 'Fully funded — every property is running'}
@@ -60,7 +61,7 @@ export default function StickyRaiseBar({ committed }: { committed: number }) {
 
         <button
           onClick={goToContact}
-          className="shrink-0 whitespace-nowrap rounded-lg bg-gradient-to-r from-gold-500 to-gold-400 px-3.5 py-2 text-xs font-semibold text-ink-950 transition-transform hover:scale-[1.03] sm:px-4 sm:text-sm cursor-pointer"
+          className="shrink-0 whitespace-nowrap rounded-lg bg-gradient-to-r from-gold-500 to-gold-400 px-3.5 py-2 text-xs font-semibold text-ink-950 transition-transform hover:scale-[1.03] sm:px-6 sm:py-3 sm:text-base cursor-pointer"
         >
           Fund a milestone
         </button>

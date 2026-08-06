@@ -184,7 +184,7 @@ export default function Dashboard() {
   const shownRegular = applyFilter(regular)
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 pb-28 sm:px-6">
+    <div className="mx-auto max-w-6xl px-4 py-8 pb-28 sm:px-6 sm:pb-40">
       <PartnerPromo />
 
       <div className="animate-fade-up mb-8 text-center">
