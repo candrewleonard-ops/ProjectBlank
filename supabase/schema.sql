@@ -160,6 +160,7 @@ create table if not exists public.deal_tasks (
   title text not null,
   status text not null default 'todo' check (status in ('todo', 'complete', 'red_alert')),
   alert_reason text,
+  note text,
   position integer not null default 0,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()

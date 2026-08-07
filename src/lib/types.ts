@@ -62,6 +62,7 @@ export interface DealTask {
   title: string
   status: TaskStatus
   alert_reason: string | null
+  note: string | null
   position: number
   created_at: string
   updated_at: string

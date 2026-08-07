@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase'
 import type { DealTask, TaskStatus } from '../../lib/types'
 import StatusBadge from '../StatusBadge'
 import Spinner from '../Spinner'
+import RehabScopeTemplate from './RehabScopeTemplate'
 
 export default function AdminTaskManager({ dealId }: { dealId: string }) {
   const [tasks, setTasks] = useState<DealTask[]>([])
@@ -53,6 +54,12 @@ export default function AdminTaskManager({ dealId }: { dealId: string }) {
     <section>
       <h2 className="mb-3 text-sm font-semibold text-white">Project status board</h2>
 
+      <RehabScopeTemplate
+        dealId={dealId}
+        startPosition={tasks.length}
+        onAdded={load}
+      />
+
       {loading ? (
         <Spinner full={false} />
       ) : (
@@ -97,6 +104,13 @@ export default function AdminTaskManager({ dealId }: { dealId: string }) {
                   className="w-full rounded-md border border-alert-500/30 bg-ink-800 px-2.5 py-1.5 text-sm text-white outline-none focus:border-alert-500 sm:w-56"
                 />
               )}
+              <input
+                placeholder="Note for investors (optional)"
+                value={task.note ?? ''}
+                onChange={(e) => setTasks((ts) => ts.map((t) => (t.id === task.id ? { ...t, note: e.target.value } : t)))}
+                onBlur={(e) => updateTask(task, { note: e.target.value.trim() || null })}
+                className="w-full rounded-md border border-ink-600 bg-ink-800 px-2.5 py-1.5 text-sm text-white outline-none focus:border-brand-500"
+              />
             </div>
           ))}
         </div>

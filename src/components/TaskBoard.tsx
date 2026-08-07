@@ -37,6 +37,9 @@ export default function TaskBoard({ tasks }: { tasks: DealTask[] }) {
                   }`}
                 >
                   <p className="text-ink-100">{task.title}</p>
+                  {task.note && (
+                    <p className="mt-1 text-xs leading-relaxed text-ink-400">{task.note}</p>
+                  )}
                   {task.status === 'red_alert' && task.alert_reason && (
                     <p className="mt-1 flex items-center gap-1 text-xs text-alert-400">{task.alert_reason}</p>
                   )}
