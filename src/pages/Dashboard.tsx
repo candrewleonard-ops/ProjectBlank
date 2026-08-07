@@ -227,7 +227,7 @@ export default function Dashboard() {
       </div>
 
       {active.length > 0 && (portfolioArv > 0 || portfolioCash > 0) && (
-        <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+        <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
           <StatTile
             value={active.length}
             label={`Active project${active.length > 1 ? 's' : ''}`}
@@ -290,7 +290,7 @@ export default function Dashboard() {
         </p>
       )}
 
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3">
         {shownRegular.map((deal, i) => (
           <div key={deal.id} className="animate-fade-up" style={{ animationDelay: `${Math.min(i, 8) * 70}ms` }}>
             <DealCard
@@ -313,7 +313,7 @@ export default function Dashboard() {
               Deals we run alongside partner investors — same live transparency, shared upside.
             </p>
           </div>
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3">
             {partnered.map((deal, i) => (
               <div key={deal.id} className="animate-fade-up" style={{ animationDelay: `${Math.min(i, 8) * 70}ms` }}>
                 <DealCard
